@@ -1,0 +1,28 @@
+{
+  "name": "achat",
+  "version": "0.0.0",
+  "description": "anonymous chat",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/kristiannotari/achat.git"
+  },
+  "keywords": [
+    "anonymous",
+    "chat"
+  ],
+  "author": "Kristian Notari",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/kristiannotari/achat/issues"
+  },
+  "homepage": "https://gitlab.com/kristiannotari/achat#README",
+  "dependencies": {
+    "express": "^4.15.4",
+    "socket.io": "^2.0.3"
+  }
+}

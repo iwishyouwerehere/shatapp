@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>achat</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script src="js/index.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div id="info">
+        <h1>achat</h1>
+        <h4>Create, join, anonymously</h4>
+        <p></p>
+    </div>
+
+    <form>
+        <input type="text" id="input-key" placeholder="key" onfocus="this.placeholder = ''" onblur="this.placeholder = 'key'" required>
+        <button id="button-create" onclick="access('create')">Create chat</button>
+        <button id="button-join" onclick="access('join')"></button>
+    </form>
+</body>
+
+</html>
