@@ -1,22 +1,32 @@
+// define module imports
 var express = require('express');
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var pippo = require('./actions/actions');
-console.log(pippo);
+var actions = require('./actions/');
+console.log("actions", actions);
+console.log("actions > createChat", actions.createChat());
+var events = require('./events/');
+console.log("events", events);
+var JsonRPCResponse = require('./resources/tools/jsonrpc');
 
+// define static content
 app.use(express.static('public'));
 app.use(express.static('chats'));
 
+// define routes
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/html/index.html');
 });
 
-// socket.io
+// define socket.io
 io.on('connection', function (socket) {
     socket.on('create_chat', function (request, response) {
-        console.log("create_chat > " + request);
-        response("bravo");
+        actions.createChat().then((data) => {
+            response(new JsonRPCResponse({ result: data }));
+        }).catch((err) => {
+            response(new JsonRPCResponse({ error: err }));
+        });
     });
 });
 

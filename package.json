@@ -23,6 +23,7 @@
   "homepage": "https://gitlab.com/kristiannotari/achat#README",
   "dependencies": {
     "express": "^4.15.4",
+    "fs-extra": "^4.0.1",
     "socket.io": "^2.0.3"
   }
 }

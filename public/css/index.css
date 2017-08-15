@@ -3,6 +3,7 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 #info {
@@ -32,7 +33,6 @@ body {
   padding: 8px 16px;
   line-height: 34px;
   margin: 8px 0 0;
-  text-align: center;
   opacity: 0;
   transition: opacity .4s linear;
 }

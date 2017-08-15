@@ -12,8 +12,9 @@ function init() {
 
 function createChat() {
     socket.emit("create_chat", { data: "request data" }, function (response) {
-        if (response) {
-            window.location.href = "/chats/" + response['chatName'] + "/chat.html";
+        if (!response['err']) {
+            console.debug("response", response.result);
+            // window.location.href = "/chats/" + response['chatName'] + "/chat.html";
         } else {
             alert("can't create chat right now");
         }
