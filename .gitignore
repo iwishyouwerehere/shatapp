@@ -1,1 +1,3 @@
 node_modules/
+public/chats/*
+!public/chats/chats.txt

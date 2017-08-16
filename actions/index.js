@@ -1,1 +1,1 @@
-module.exports.createChat = require('./createChat');
+module.exports.createChat = require('./createChat.action');

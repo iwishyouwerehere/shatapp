@@ -1,3 +1,2 @@
-exports.jsonrpc = require('./jsonrpc');
-exports.generateRandName = require('./generateRandName');
-exports.getFileContent = require('./getFileContent');
+module.exports.generateRandName = require('./generateRandName');
+module.exports.getFileContent = require('./getFileContent');

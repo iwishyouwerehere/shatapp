@@ -1,11 +1,11 @@
 var getFileContent = require('./getFileContent.js'),
     filePath = './resources/dictionary.txt';
 
-module.exports = function () {
+module.exports = function generateRandName() {
 
     return getFileContent(filePath).then(data => {
-        var names = data.split('\n');
-        var name = names[Math.floor(Math.random() * names.length)];
-        return name;
+        let names = data.split('\n');
+        let name = names[Math.floor(Math.random() * names.length)];
+        return name.trim();
     });
 };

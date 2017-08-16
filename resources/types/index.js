@@ -1,0 +1,1 @@
+module.exports.jsonrpc = require('./jsonrpc');

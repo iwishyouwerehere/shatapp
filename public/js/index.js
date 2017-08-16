@@ -3,6 +3,12 @@
 var socket;
 var key = undefined;
 var keyChangeEvent = new Event('keyChangeEvent');
+var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
+    this.jsonrpc = '2.0';
+    this.method = method;
+    this.params = params;
+    this.id = id;
+};
 
 
 function init() {
@@ -11,12 +17,15 @@ function init() {
 
 
 function createChat() {
-    socket.emit("create_chat", { data: "request data" }, function (response) {
+    var request = new JsonRPCRequest('POST', null, 0);
+    console.info("create_chat request", request);
+    
+    socket.emit("create_chat", request, function (response) {
         if (!response['err']) {
-            console.debug("response", response.result);
-            // window.location.href = "/chats/" + response['chatName'] + "/chat.html";
+            console.info("create_chat response result", response);
+            window.location.href = "/chats/" + response.result + "/chat.html";
         } else {
-            alert("can't create chat right now");
+            console.error("create_chat response error", response);
         }
     })
 }
