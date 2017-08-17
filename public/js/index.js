@@ -11,17 +11,25 @@ var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
 };
 
 
+/**
+ * 
+ * 
+ */
 function init() {
     socket = io();
 }
 
 
+/**
+ * 
+ * 
+ */
 function createChat() {
     var request = new JsonRPCRequest('POST', null, 0);
     console.info("create_chat request", request);
     
     socket.emit("create_chat", request, function (response) {
-        if (!response['err']) {
+        if (!response['error']) {
             console.info("create_chat response result", response);
             window.location.href = "/chats/" + response.result + "/chat.html";
         } else {
@@ -39,9 +47,9 @@ function createChat() {
 
 function access(type) {
     // get key value and set it
-    var e_inputKey = document.querySelector("form > input");
-    var key = e_inputKey.value;
-    setTimeout(function () { e_inputKey.value = "" }, 0); // for style purpose only
+    var $inputKey = document.querySelector("form > input");
+    var key = $inputKey.value;
+    setTimeout(function () { $inputKey.value = "" }, 0); // for style purpose only
     if (type == "create") { document.removeEventListener('keyChangeEvent', keyChangeEvent); }
     if (key && !setKey(key)) {
         alert("your browser don't allows storage");
@@ -118,18 +126,18 @@ function removeKey() {
  * 
  */
 function keyChanged() {
-    var e_keyView = document.querySelector("#info > p");
-    var e_form = document.querySelector("form");
+    var $keyView = document.querySelector("#info > p");
+    var $form = document.querySelector("form");
     if (key) {
-        e_keyView.innerHTML = key;
-        e_keyView.style.opacity = 1;
-        e_form.querySelector("input").required = false;
-        e_form.querySelector("#button-join").innerHTML = "Leave";
+        $keyView.innerHTML = key;
+        $keyView.style.opacity = 1;
+        $form.querySelector("input").required = false;
+        $form.querySelector("#button-join").innerHTML = "Leave";
     } else {
-        e_keyView.style.opacity = 0;
-        setTimeout(function () { e_keyView.innerHTML = ""; }, 200);
-        setTimeout(function () { e_form.querySelector("input").required = true; }, 0); // for style purpose only
-        e_form.querySelector("#button-join").innerHTML = "Join chat";
+        $keyView.style.opacity = 0;
+        setTimeout(function () { $keyView.innerHTML = ""; }, 200);
+        setTimeout(function () { $form.querySelector("input").required = true; }, 0); // for style purpose only
+        $form.querySelector("#button-join").innerHTML = "Join chat";
     }
 }
 

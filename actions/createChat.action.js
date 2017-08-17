@@ -5,9 +5,9 @@ var fs = require('fs'),
     getFileContent = require('./../resources/tools/getFileContent');
 // import emitter
 var chatEmitter = require('./../resources/emitters/').chatEmitter;
-// define global varibles
+// define global variables
 const MAX_RESEARCHES = 15000,
-    MAX_ACTIVECHATS = 300
+    MAX_ACTIVE_CHATS = 300
 
 module.exports = function createChatAction() {
 
@@ -31,7 +31,7 @@ module.exports = function createChatAction() {
                 getFileContent(activeChatsPath).then((activeChats) => {
                     activeChats = activeChats.split('\n').map((chatName) => { return chatName.trim(); });
                     // limit max active chats
-                    if (activeChats.length >= MAX_ACTIVECHATS) {
+                    if (activeChats.length >= MAX_ACTIVE_CHATS) {
                         reject(new JsonRPCError(409, "Conflict"));
                         return;
                     }

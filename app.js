@@ -5,9 +5,9 @@ var express = require('express'),
     io = require('socket.io')(http),
     child_process = require('child_process'),
     routes = require('./routes/')(app), // defined routes
-    // middlewares = require('./routes/middlewares/')(app),
     events = require('./events/'),
-    emitters = require('./resources/emitters/');
+    emitters = require('./resources/emitters/'),
+    JsonRPCRequest = require('./resources/types/jsonrpc').request;
 
 // define global varibles
 var checkChatLifecyclePath = './server/checkChatLifecycle.js';
@@ -18,9 +18,18 @@ app.use(express.static('public'));
 
 // define routes (by require)
 
-// define socket.io
+// define socket.io external events
 io.on('connection', function (socket) {
-    socket.on('create_chat', events.createChat);
+    console.log('USER CONNECTED');
+    let socketEvents = events(socket);
+    socket.on('create_chat', socketEvents.createChat);
+    socket.on('send_message', socketEvents.sendMessage);
+    socket.on('get_username', socketEvents.getUsername);
+    socket.on('get_chat_content', socketEvents.getChatContent);
+});
+// define socket.io internal events
+chatEmitter.on('chat_deleted', function (chatName) {
+    io.to(chatName).emit('chat_deleted', new JsonRPCRequest('SEND', { chatName: chatName }));
 });
 
 // server listen
@@ -30,6 +39,9 @@ http.listen(3000, function () {
 
 // create and manage checkChatLifecycle process
 var p_checkChatLifecycle = child_process.fork(checkChatLifecyclePath, [], { execArgv: ['--debug=5859'] });
+p_checkChatLifecycle.on('message', function onRemovedChat(chatName) {
+    chatEmitter.emit('chat_deleted', chatName);
+});
 chatEmitter.on('create_chat', function sendToCheckChatLifecycle(chatName) {
     p_checkChatLifecycle.send(chatName);
 });

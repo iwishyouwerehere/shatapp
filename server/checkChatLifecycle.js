@@ -8,6 +8,9 @@ const MAX_CHAT_LIFETIME = 320000,
 
 module.exports = function checkChatLifecycle() {
     console.log('checkChatLifecycle started');
+    // check for undeleted lasting chats folders
+    let activeChats = fs.readFileSync(activeChatsPath, { encoding: 'UTF-8' });
+    activeChats = activeChats.split('\n').map((activeChat) => { return activeChat.trim(); });
 
     // bind to create_chat event
     process.on('message', function waitChatLifetime(chatName) {
@@ -17,7 +20,7 @@ module.exports = function checkChatLifecycle() {
         sleep.sleepWithCondition(function condition() {
             // break sleep if chat folder no longer exists
             return !fs.existsSync(chatDir);
-        }, MAX_CHAT_LIFETIME, function done() {
+        }, MAX_CHAT_LIFETIME, function removeChat() {
             // delete chat folder and files
             if (fs.existsSync(chatDir)) {
                 fs.unlinkSync(chatDir + '/chat.txt');
@@ -30,7 +33,9 @@ module.exports = function checkChatLifecycle() {
             activeChats.splice(activeChats.indexOf(chatName), 1);
             activeChats = activeChats.join('\n');
             fs.writeFileSync(activeChatsPath, activeChats);
+
+            process.send(chatName);
         });
-    })
+    });
 
 }();
