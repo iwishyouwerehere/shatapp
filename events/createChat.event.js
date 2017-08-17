@@ -1,7 +1,7 @@
 // define module imports
 var createChatAction = require('./../actions/createChat.action'),
-    JsonRPCResponse = require('./../resources/types/jsonrpc').response;
-
+    JsonRPCResponse = require('./../resources/types/jsonrpc').response,
+    JsonRPCError = require('./../resources/types/jsonrpc').error;
 
 module.exports = function createChatEvent(socket) {
     return function eventHandler(request, response) {
