@@ -33,8 +33,8 @@ chatEmitter.on('chat_deleted', function (chatName) {
 });
 
 // server listen
-http.listen(8080, function () {
-    console.log('listening on *:8080');
+http.listen(process.env.port || 3000, function () {
+    console.log('listening on *:' + (process.env.port || 3000 ));
 });
 
 // create and manage checkChatLifecycle process
