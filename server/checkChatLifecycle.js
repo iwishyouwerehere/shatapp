@@ -8,9 +8,6 @@ const MAX_CHAT_LIFETIME = 320000,
 
 module.exports = function checkChatLifecycle() {
     console.log('checkChatLifecycle started');
-    // check for undeleted lasting chats folders
-    let activeChats = fs.readFileSync(activeChatsPath, { encoding: 'UTF-8' });
-    activeChats = activeChats.split('\n').map((activeChat) => { return activeChat.trim(); });
 
     // bind to create_chat event
     process.on('message', function waitChatLifetime(chatName) {
@@ -37,5 +34,4 @@ module.exports = function checkChatLifecycle() {
             process.send(chatName);
         });
     });
-
 }();
