@@ -13,6 +13,16 @@ var express = require('express'),
 var checkChatLifecyclePath = './server/checkChatLifecycle.js';
 var chatEmitter = emitters.chatEmitter;
 
+// define sub processes
+// create and manage checkChatLifecycle process
+var p_checkChatLifecycle = child_process.fork(checkChatLifecyclePath, [], { execArgv: ['--debug=5859'] });
+p_checkChatLifecycle.on('message', function onRemovedChat(chatName) {
+    chatEmitter.emit('chat_deleted', chatName);
+});
+chatEmitter.on('create_chat', function sendToCheckChatLifecycle(chatName) {
+    p_checkChatLifecycle.send(chatName);
+});
+
 // define static content
 app.use(express.static('public'));
 
@@ -35,13 +45,4 @@ chatEmitter.on('chat_deleted', function (chatName) {
 // server listen
 http.listen(process.env.PORT || 3000, function () {
     console.log('listening on *:' + (process.env.PORT || 3000 ));
-});
-
-// create and manage checkChatLifecycle process
-var p_checkChatLifecycle = child_process.fork(checkChatLifecyclePath, [], { execArgv: ['--debug=5859'] });
-p_checkChatLifecycle.on('message', function onRemovedChat(chatName) {
-    chatEmitter.emit('chat_deleted', chatName);
-});
-chatEmitter.on('create_chat', function sendToCheckChatLifecycle(chatName) {
-    p_checkChatLifecycle.send(chatName);
 });
