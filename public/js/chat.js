@@ -34,6 +34,7 @@ function init(done, err) {
     chatName = chatName.substring(0, chatName.lastIndexOf('/'));
     chatName = chatName.substring(chatName.lastIndexOf('/') + 1, chatName.length);
     document.querySelector("#info > h1").innerHTML = chatName;
+    document.title = "shatapp@" + chatName;
 
     // start of asynchronous phase
 

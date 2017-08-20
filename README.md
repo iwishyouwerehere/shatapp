@@ -1,4 +1,4 @@
-# ACHAT
+# SHATAPP
 ### Create, join, anonymously
 
 <br><br>
