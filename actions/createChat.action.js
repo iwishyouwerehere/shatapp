@@ -36,7 +36,6 @@ module.exports = function createChatAction() {
                         return;
                     }
                     randName().then((chatName) => {
-                        console.log(chatName);
                         if (activeChats.indexOf(chatName) != -1) {
                             // if chat name is already taken restart research
                             keepResearching();

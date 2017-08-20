@@ -6,7 +6,6 @@ var writeNewMessageAction = require('./../actions/writeNewMessage.action'),
 
 module.exports = function sendMessageEvent(socket) {
     return function eventHandler(request, response) {
-        console.log('request sendMessageEvent', request);
         // check params
         if (!(request.params
             && request.params['chatName']

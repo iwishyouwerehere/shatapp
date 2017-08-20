@@ -7,11 +7,10 @@ const MAX_CHAT_LIFETIME = 320000,
     activeChatsPath = './public/chats/chats.txt';
 
 module.exports = function checkChatLifecycle() {
-    console.log('checkChatLifecycle started');
+    console.log('checkChatLifecycle subprocess started');
 
     // bind to create_chat event
     process.on('message', function waitChatLifetime(chatName) {
-        console.log('checkChatLifecycle chat created');
         let chatDir = './public/chats/' + chatName;
         // sleep for set chat lifetime
         sleep.sleepWithCondition(function condition() {

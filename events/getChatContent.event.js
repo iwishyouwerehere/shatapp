@@ -5,7 +5,6 @@ var getChatContentAction = require('./../actions/getChatContent.action'),
     
 module.exports = function getChatContentEvent(socket) {
     return function eventHandler(request, response) {
-        console.log('request getChatContentEvent', request);
         // check params
         if (!(request.params
             && request.params['chatName'])) { response(new JsonRPCResponse({ error: new JsonRPCError(400, "Bad Request", { cause: 'missing chatName parameter' }) }, request.id)); }

@@ -5,7 +5,6 @@ var createChatAction = require('./../actions/createChat.action'),
 
 module.exports = function createChatEvent(socket) {
     return function eventHandler(request, response) {
-        console.log('request createChatEvent', request);
         createChatAction().then((chatName) => {
             response(new JsonRPCResponse({ result: chatName }, request.id));
         }).catch((err) => {

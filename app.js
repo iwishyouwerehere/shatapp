@@ -30,7 +30,6 @@ app.use(express.static('public'));
 
 // define socket.io external events
 io.on('connection', function (socket) {
-    console.log('USER CONNECTED');
     let socketEvents = events(socket);
     socket.on('create_chat', socketEvents.createChat);
     socket.on('send_message', socketEvents.sendMessage);

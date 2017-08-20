@@ -39,10 +39,8 @@ function init(done, err) {
 
     // get userName
     var request = new JsonRPCRequest('GET', { 'chatName': chatName }, 0);
-    console.info("get_username request", request);
     socket.emit("get_username", request, function receiveUsername(response) {
         if (!response['error']) {
-            console.info("get_username response result", response);
             userName = response.result;
             document.getElementById("username").innerHTML = "<span>Username </span>" + userName;
 
@@ -50,29 +48,24 @@ function init(done, err) {
             var request = new JsonRPCRequest('GET', { 'chatName': chatName }, 0);
             socket.emit("get_chat_content", request, function (response) {
                 if (!response['error']) {
-                    console.info("get_chat_content response result", response);
                     updateChat(response.result);
 
                     // register to socket events
                     socket.on('new_message', function onNewMessage(request) {
-                        console.info("new_message send result", request);
                         updateChat(request.params['msg']);
                     })
                     socket.on('chat_deleted', function onChatDeleted(request) {
-                        console.info("chat_deleted send result", request);
                         alert('chat gone');
                         window.location.href = '/';
                     })
 
                     done();
                 } else {
-                    console.error("get_chat_content response error", response);
                     err('chat_content')
                 }
             });
 
         } else {
-            console.error("get_username response error", response);
             err('username');
         }
     });
@@ -176,7 +169,6 @@ function updateChat(messages) {
                 
                 if ($last_chat_message && $last_chat_message.getElementsByTagName("h6")[0].innerHTML == username) {
                     // append on last message
-                    console.debug("$last_chat_message username", $last_chat_message.getElementsByTagName("h6")[0].innerHTML);
                     $last_chat_message.innerHTML += '<p>' + text + '</p>';
                 } else {
                     // append new message
@@ -198,7 +190,6 @@ function updateChat(messages) {
     if ($chat_messages.scrollTop == 0) {
         // only if it's the first time chat update then animate it from a decent initial point
         var chatStartHeight = (chatScrollHeight > chatClientHeight) ? chatClientHeight : chatScrollHeight - 200;
-        console.debug(chatScrollHeight, chatStartHeight);
         $chat_messages.scrollTop = chatStartHeight;
     }
     // scroll to bottom of the messages
@@ -214,7 +205,6 @@ function updateChat(messages) {
 function sendMsg() {
     var $input = document.getElementById("input");
     var msg = $input.value.trim();
-    console.debug("textarea", msg);
     if (msg == "") { return; }
     $input.value = "";
     $input.focus();
@@ -229,9 +219,7 @@ function sendMsg() {
     var request = new JsonRPCRequest('POST', params, 0);
     socket.emit('send_message', request, function messageSent(response) {
         if (!response['error']) {
-            console.info("send_message response result", response);
         } else {
-            console.error("send_message response error", response);
         }
     })
 
@@ -256,7 +244,6 @@ var documentReady = function () {
 
     // init
     init(function done() {
-        console.log('INIT SUCCESS');
     }, function err(cause) {
         switch (cause) {
             case 'key': {

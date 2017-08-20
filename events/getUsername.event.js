@@ -6,12 +6,10 @@ var generateUsernameAction = require('./../actions/generateUsername.action'),
 
 module.exports = function getUsernameEvent(socket) {
     return function eventHandler(request, response) {
-        console.log('request getUsernameEvent', request);
         // check params
         if (!(request.params && request.params['chatName'])) { response(new JsonRPCResponse({ error: new JsonRPCError(400, "Bad Request", { cause: 'missing chatName parameter' }) }, request.id)); }
         // add socket to chat room
         socket.join(request.params['chatName'], function joined(err) {
-            console.log('SOCKET ROOMS', socket.rooms);
             if (!err) {
                 // generate username and answer back
                 generateUsernameAction(request.params['chatName']).then((userName) => {

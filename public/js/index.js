@@ -26,14 +26,11 @@ function init() {
  */
 function createChat() {
     var request = new JsonRPCRequest('POST', null, 0);
-    console.info("create_chat request", request);
     
     socket.emit("create_chat", request, function (response) {
         if (!response['error']) {
-            console.info("create_chat response result", response);
             window.location.href = "/chats/" + response.result + "/chat.html";
         } else {
-            console.error("create_chat response error", response);
         }
     })
 }

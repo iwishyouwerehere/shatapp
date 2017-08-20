@@ -36,7 +36,6 @@ module.exports = function generateUsername(chatName) {
                         return;
                     }
                     randName().then((userName) => {
-                        console.log(userName);
                         if (activeUsers.indexOf(userName) != -1) {
                             // if chat name is already taken restart research
                             keepResearching();
