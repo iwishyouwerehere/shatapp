@@ -2,6 +2,7 @@
 ### *Create, join, anonymously*
 
 > [Demo Preview](https://shatapp.herokuapp.com/)
+> *could load for a couple of seconds if in idle status*
 
 ## Info
 Shatapp is a nodejs client-server application for anonymous chatting.
