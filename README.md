@@ -19,3 +19,6 @@ Moreover, chats are deleted every 5 minutes, so that you leave no tracks.
 
 ## Help
 Any kind of help would be really appreciated. [Here](CONTRIBUTING.md) there is the contributing guide.
+
+## Authors
+> Kristian Notari, Farouk Serragedine
