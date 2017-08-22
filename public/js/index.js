@@ -2,7 +2,6 @@
 
 var socket;
 var key = undefined;
-var keyChangeEvent = new Event('keyChangeEvent');
 var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
     this.jsonrpc = '2.0';
     this.method = method;
@@ -26,7 +25,7 @@ function init() {
  */
 function createChat() {
     var request = new JsonRPCRequest('POST', null, 0);
-    
+
     socket.emit("create_chat", request, function (response) {
         if (!response['error']) {
             window.location.href = "/chats/" + response.result + "/chat.html";
@@ -47,47 +46,21 @@ function access(type) {
     var $inputKey = document.querySelector("form > input");
     var key = $inputKey.value;
     setTimeout(function () { $inputKey.value = "" }, 0); // for style purpose only
-    if (type == "create") { document.removeEventListener('keyChangeEvent', keyChangeEvent); }
-    if (key && !setKey(key)) {
-        alert("your browser don't allows storage");
-        return;
-    }
 
     // switch based on access type
     switch (type) {
         case 'join':
-            if (key) {
-                setKey(key);
-            } else {
-                removeKey();
-            }
+            // check if chat exist
             break;
-        case 'create':
-            if (this.key) {
-                createChat();
-            }
+        case 'leave':
+            removeKey();
+            var $keyView = document.querySelector("#info > p");
+            $keyView.style.opacity = 0;
+            setTimeout(function () { $keyView.innerHTML = ""; }, 200);
             break;
     }
 }
 
-/**
- * Save locally the private key
- * 
- * @param {string} key
- * @returns {boolean} if browser supports storage
- */
-function setKey(key) {
-    if (key) {
-        this.key = key;
-        document.dispatchEvent(keyChangeEvent);
-        if (typeof (Storage) !== "undefined") {
-            sessionStorage.setItem("key", key);
-            return true;
-        }
-    }
-
-    return false;
-}
 
 /**
  * Get locally saved private key if present
@@ -117,29 +90,6 @@ function removeKey() {
     return false;
 }
 
-/**
- * Event handler for key change event.
- * Edit style of index.html according to user key presence
- * 
- */
-function keyChanged() {
-    var $keyView = document.querySelector("#info > p");
-    var $form = document.querySelector("form");
-    if (key) {
-        $keyView.innerHTML = key;
-        $keyView.style.opacity = 1;
-        $form.querySelector("input").required = false;
-        $form.querySelector("#button-join").innerHTML = "Leave";
-    } else {
-        $keyView.style.opacity = 0;
-        setTimeout(function () { $keyView.innerHTML = ""; }, 200);
-        setTimeout(function () { $form.querySelector("input").required = true; }, 0); // for style purpose only
-        $form.querySelector("#button-join").innerHTML = "Join chat";
-    }
-}
-
-
-
 // DOCUMENT READY
 var documentReady = function () {
 
@@ -151,11 +101,15 @@ var documentReady = function () {
         e.preventDefault();
     });
 
-    // get saved key if there's one and bind page to keyChangeEvent
-    document.addEventListener('keyChangeEvent', keyChanged.bind(this));
+    // get saved key if there's one
     setKey(getKey());
-    document.dispatchEvent(keyChangeEvent);
-
+    if (key) {
+        var $keyView = document.querySelector("#info > p");
+        $keyView.style.opacity = 1;
+        setTimeout(function () { $keyView.innerHTML = ""; }, 200);
+        var $form = document.getElementsByTagName("form")[0];
+        $form.innerHTML += '<button id="button-join" onclick="access(\'join\')">Join chat</button>';
+    }
 
     // bind to key input change event
     document.querySelector("form > input").onkeyup = function (e) {

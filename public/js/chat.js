@@ -7,68 +7,76 @@ var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
     this.params = params;
     this.id = id;
 };
-var key,
-    publicKey,
-    chatName,
-    userName,
-    chatLog = {
+var client = {
+    key: '',
+    publicKey: '',
+    userName: ''
+    },
+    chat = {
+        name: '',
+        users: [],
         spam: 0,
         messages: 0
     },
     chatClientHeight;
 
-function init(done, err) {
+function init() {
     // init socket
     socket = io();
 
     // get key
-    key = getKey();
-    if (!key) {
+    client.key = getKey();
+    if (!client.key) {
         err('key');
         return;
     }
-    publicKey = encrypt(key);
+    client.publicKey = encrypt(client.key);
 
     // get chatName
-    chatName = window.location.pathname;
-    chatName = chatName.substring(0, chatName.lastIndexOf('/'));
-    chatName = chatName.substring(chatName.lastIndexOf('/') + 1, chatName.length);
-    document.querySelector("#info > h1").innerHTML = chatName;
-    document.title = "shatapp@" + chatName;
+    chat.name = window.location.pathname;
+    chat.name = chat.name.substring(0, chat.name.lastIndexOf('/'));
+    chat.name = chat.name.substring(chat.name.lastIndexOf('/') + 1, chat.name.length);
+    document.querySelector("#info > h1").innerHTML = chat.name;
+    document.title = "shatapp@" + chat.name;
 
     // start of asynchronous phase
+    var requestPromises = [];
 
     // get userName
-    var request = new JsonRPCRequest('GET', { 'chatName': chatName }, 0);
-    socket.emit("get_username", request, function receiveUsername(response) {
-        if (!response['error']) {
-            userName = response.result;
-            document.getElementById("username").innerHTML = "<span>Username </span>" + userName;
+    requestPromises.push(new Promise(function executor(resolve, reject) {
+        var request = new JsonRPCRequest('GET', { 'chatName': chat.name }, 0);
+        socket.emit("get_username", request, function receiveUsername(response) {
+            if (!response['error']) {
+                userName = response.result;
+                document.getElementById("username").innerHTML = "<span>Username </span>" + userName;
+                resolve();
+            } else {
+                reject('username');
+            }
+        });
+    }))
+    requestPromises.push(new Promise(function executor(resolve, reject) {
+        var request = new JsonRPCRequest('GET', { 'chatName': chat.name }, 0);
+        socket.emit("get_chat_content", request, function (response) {
+            if (!response['error']) {
+                updateChat(response.result);
+                resolve();
+            } else {
+                reject('chat_content')
+            }
+        });
+    }));
 
-            // get initial chat content
-            var request = new JsonRPCRequest('GET', { 'chatName': chatName }, 0);
-            socket.emit("get_chat_content", request, function (response) {
-                if (!response['error']) {
-                    updateChat(response.result);
-
-                    // register to socket events
-                    socket.on('new_message', function onNewMessage(request) {
-                        updateChat(request.params['msg']);
-                    })
-                    socket.on('chat_deleted', function onChatDeleted(request) {
-                        alert('chat gone');
-                        window.location.href = '/';
-                    })
-
-                    done();
-                } else {
-                    err('chat_content')
-                }
-            });
-
-        } else {
-            err('username');
-        }
+    return Promise.all(requestPromises).then(function registerSocketEvents() {
+        // register to socket events
+        socket.on('new_message', function onNewMessage(request) {
+            updateChat(request.params['msg']);
+        })
+        socket.on('chat_deleted', function onChatDeleted(request) {
+            alert('chat gone');
+            window.location.href = '/';
+        })
+        socket.on()
     });
 }
 
@@ -118,8 +126,8 @@ function encrypt(data) {
  */
 function formatMsg(msg) {
     return "<message>" +
-        "<username>" + encrypt(userName) + "</username>" +
-        "<publicKey>" + publicKey + "</publicKey>" +
+        "<username>" + encrypt(client.userName) + "</username>" +
+        "<publicKey>" + client.publicKey + "</publicKey>" +
         "<content>" + encrypt(msg) + "</content>" +
         "</message>";
 }
@@ -164,10 +172,10 @@ function updateChat(messages) {
             var $last_chat_message = $chat_messages.lastChild;
             var $xml = oParser.parseFromString(msg, "text\/xml");
             var publicKeyToCheck = $xml.getElementsByTagName("publicKey")[0].innerHTML;
-            if (publicKeyToCheck == publicKey) {
+            if (publicKeyToCheck == client.publicKey) {
                 var username = decrypt($xml.getElementsByTagName("username")[0].innerHTML);
                 var text = decrypt($xml.getElementsByTagName("content")[0].innerHTML);
-                
+
                 if ($last_chat_message && $last_chat_message.getElementsByTagName("h6")[0].innerHTML == username) {
                     // append on last message
                     $last_chat_message.innerHTML += '<p>' + text + '</p>';
@@ -182,10 +190,10 @@ function updateChat(messages) {
     })
 
     // update chatLog
-    chatLog.spam += spam;
-    chatLog.messages += messages.length;
+    chat.spam += spam;
+    chat.messages += messages.length;
     // update chatLog graphics
-    document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chatLog.spam + "/" + chatLog.messages;
+    document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chat.spam + "/" + chat.messages;
     // scroll to last message
     var chatScrollHeight = $chat_messages.scrollHeight;
     if ($chat_messages.scrollTop == 0) {
@@ -215,12 +223,14 @@ function sendMsg() {
 
     var params = {
         'msg': msg,
-        'chatName': chatName
+        'chatName': chat.name,
+        'userName': client.userName
     };
     var request = new JsonRPCRequest('POST', params, 0);
     socket.emit('send_message', request, function messageSent(response) {
         if (!response['error']) {
         } else {
+            alert(response.error);
         }
     })
 
@@ -244,8 +254,9 @@ var documentReady = function () {
     chatClientHeight = document.getElementById('chat-messages').clientHeight;
 
     // init
-    init(function done() {
-    }, function err(cause) {
+    init().then(function () {
+        console.log('init success');
+    }).catch(function err(cause) {
         switch (cause) {
             case 'key': {
                 alert('key error');
@@ -258,7 +269,7 @@ var documentReady = function () {
             case 'chat_content': {
                 alert('get chat content error');
                 break;
-            }    
+            }
             default: {
                 alert('Generic internal error. Please retry');
             }
