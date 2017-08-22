@@ -17,8 +17,31 @@ var client = {
         users: [],
         spam: 0,
         messages: 0
-    },
-    chatClientHeight;
+    };
+
+function showAlert(type) {
+    var $alert = document.getElementById('alert');
+    var $alertInfo = document.getElementById('alert-info');
+    var $title = $alert.getElementsByTagName("h1")[0];
+    var $text = $alert.getElementsByTagName("p")[0];
+    var $button = $alert.getElementsByTagName("button")[0];
+
+    switch (type) {
+        case 'key_not_found': {
+            $title.innerHTML = "Key not found";
+            $text.innerHTML = "Please insert a new key";
+            $button.innerHTML = "Set key";
+            $alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
+        }
+    }
+
+    $alert.style.display = "block";
+    $alert.style.opacity = 1;
+}
+
+function closeAlert() {
+    
+}
 
 function init() {
     // init socket
@@ -27,8 +50,7 @@ function init() {
     // get key
     client.key = getKey();
     if (!client.key) {
-        err('key');
-        return;
+        showAlert('key_not_found');
     }
     client.publicKey = encrypt(client.key);
 
@@ -135,27 +157,6 @@ function formatMsg(msg) {
 /**
  * 
  * 
- * @param {any} element 
- * @param {any} to 
- * @param {any} duration 
- * @returns 
- */
-function scrollTo(element, to, duration) {
-    if (duration <= 0) return;
-    var difference = to - element.scrollTop;
-    var perTick = difference / duration * 10;
-
-    setTimeout(function () {
-        element.scrollTop = element.scrollTop + perTick;
-        if (element.scrollTop == to) return;
-        scrollTo(element, to, duration - 10);
-    }, 10);
-}
-
-
-/**
- * 
- * 
  * @param {Array} messages
  */
 function updateChat(messages) {
@@ -194,16 +195,6 @@ function updateChat(messages) {
     chat.messages += messages.length;
     // update chatLog graphics
     document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chat.spam + "/" + chat.messages;
-    // scroll to last message
-    var chatScrollHeight = $chat_messages.scrollHeight;
-    if ($chat_messages.scrollTop == 0) {
-        // only if it's the first time chat update then animate it from a decent initial point
-        var chatStartHeight = (chatScrollHeight > chatClientHeight) ? chatClientHeight : chatScrollHeight - 200;
-        $chat_messages.scrollTop = chatStartHeight;
-    }
-    // scroll to bottom of the messages
-    // scrollTo($chat_messages, chatScrollHeight, 2000);
-
 }
 
 /**
@@ -239,6 +230,11 @@ function sendMsg() {
 // DOCUMENT READY
 var documentReady = function () {
 
+    // prevent form from submitting
+    document.querySelector("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+    });
+
     // bind enter key pressed to send button
     document.getElementById("input").onkeypress = function (e) {
         if (e.which == 13) {
@@ -249,9 +245,6 @@ var documentReady = function () {
 
     // focus cursor on input box
     document.querySelector("#chat-input > #input").focus();
-
-    // get chat messages client height
-    chatClientHeight = document.getElementById('chat-messages').clientHeight;
 
     // init
     init().then(function () {

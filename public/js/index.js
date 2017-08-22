@@ -44,13 +44,14 @@ function createChat() {
 function access(type) {
     // get key value and set it
     var $inputKey = document.querySelector("form > input");
-    var key = $inputKey.value;
+    var chatName = $inputKey.value;
     setTimeout(function () { $inputKey.value = "" }, 0); // for style purpose only
 
     // switch based on access type
     switch (type) {
         case 'join':
             // check if chat exist
+            createChat();
             break;
         case 'leave':
             removeKey();
@@ -102,7 +103,7 @@ var documentReady = function () {
     });
 
     // get saved key if there's one
-    setKey(getKey());
+    key = getKey();
     if (key) {
         var $keyView = document.querySelector("#info > p");
         $keyView.style.opacity = 1;
