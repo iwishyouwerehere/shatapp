@@ -1,7 +1,7 @@
 # SHATAPP
 ### *Create, join, anonymously*
 
-> [Demo Preview](http://shatapp.io/)
+> [Demo Preview](https://shatapp.herokuapp.com/)
 > *could load for a couple of seconds if in idle status*
 
 > version 0.1.0
