@@ -29,7 +29,7 @@ module.exports = function checkChatLifecycle() {
             activeChats.splice(activeChats.indexOf(chatName), 1);
             activeChats = activeChats.join('\n');
             fs.writeFileSync(activeChatsPath, activeChats);
-
+            // answer back when chat has been deleted
             process.send(chatName);
         });
     });
