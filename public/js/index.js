@@ -107,9 +107,7 @@ var documentReady = function () {
     if (key) {
         var $keyView = document.querySelector("#info > p");
         $keyView.style.opacity = 1;
-        setTimeout(function () { $keyView.innerHTML = ""; }, 200);
-        var $form = document.getElementsByTagName("form")[0];
-        $form.innerHTML += '<button id="button-join" onclick="access(\'join\')">Join chat</button>';
+        $keyView.innerHTML = key;
     }
 
     // bind to key input change event

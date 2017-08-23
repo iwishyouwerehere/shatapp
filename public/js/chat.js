@@ -11,7 +11,7 @@ var client = {
     key: '',
     publicKey: '',
     userName: ''
-    },
+},
     chat = {
         name: '',
         users: [],
@@ -19,29 +19,7 @@ var client = {
         messages: 0
     };
 
-function showAlert(type) {
-    var $alert = document.getElementById('alert');
-    var $alertInfo = document.getElementById('alert-info');
-    var $title = $alert.getElementsByTagName("h1")[0];
-    var $text = $alert.getElementsByTagName("p")[0];
-    var $button = $alert.getElementsByTagName("button")[0];
-
-    switch (type) {
-        case 'key_not_found': {
-            $title.innerHTML = "Key not found";
-            $text.innerHTML = "Please insert a new key";
-            $button.innerHTML = "Set key";
-            $alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
-        }
-    }
-
-    $alert.style.display = "block";
-    $alert.style.opacity = 1;
-}
-
-function closeAlert() {
-    
-}
+/*  EXECUTION   */
 
 function init() {
     // init socket
@@ -50,7 +28,7 @@ function init() {
     // get key
     client.key = getKey();
     if (!client.key) {
-        showAlert('key_not_found');
+        return Promise.reject('key_not_found');
     }
     client.publicKey = encrypt(client.key);
 
@@ -98,7 +76,6 @@ function init() {
             alert('chat gone');
             window.location.href = '/';
         })
-        socket.on()
     });
 }
 
@@ -111,7 +88,20 @@ function getKey() {
     if (typeof (Storage) !== "undefined") {
         return sessionStorage.getItem("key");
     }
-    return;
+    return client.key;
+}
+
+/**
+ * Set locally the given key
+ * 
+ * @param {any} key
+ */
+function setKey(key) {
+    client.key = key;
+    client.publicKey = encrypt(key);
+    if (typeof (Storage) !== "undefined") {
+        sessionStorage.setItem("key", key);
+    }
 }
 
 /**
@@ -227,6 +217,53 @@ function sendMsg() {
 
 }
 
+function showAlert(type) {
+    var $alert = document.getElementById('alert');
+    var $alertInfo = document.getElementById('alert-info');
+    var $title = $alert.getElementsByTagName("h1")[0];
+    var $text = $alert.getElementsByTagName("p")[0];
+    var $button = $alert.getElementsByTagName("button")[0];
+
+    switch (type) {
+        case 'key_not_found': {
+            $title.innerHTML = "Insert a key";
+            $text.innerHTML = "In order to send messages in a chatroom you have to create a private key to crypt your messages. We care about your privacy!";
+            $button.innerHTML = "Set key";
+            $alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
+            break;
+        }
+    }
+
+    $button.setAttribute("data-type", type);
+    $alert.style.display = "block";
+    $alert.style.opacity = 1;
+}
+
+function closeAlert() {
+    var $alert = document.getElementById('alert');
+    var $input = $alert.querySelector("input");
+    var $button = $alert.querySelector("button");
+    var data;
+    if ($input) {
+        data = $input.value;
+    }
+    var type = $button.getAttribute("data-type");
+    switch (type) {
+        case 'key_not_found': {
+            setKey(data);
+            init();
+        }
+    }
+
+    $alert.style.opacity = 0;
+    setTimeout(function () {
+        $alert.style.display = "none";
+        if ($input) {
+            $alert.querySelector("form").querySelector("div").removeChild($input);
+        }
+    }, 200); // for style purpose only
+}
+
 // DOCUMENT READY
 var documentReady = function () {
 
@@ -251,20 +288,16 @@ var documentReady = function () {
         console.log('init success');
     }).catch(function err(cause) {
         switch (cause) {
-            case 'key': {
-                alert('key error');
-                break;
+            case 'key_not_found': {
             }
             case 'username': {
-                alert('username error');
-                break;
             }
             case 'chat_content': {
-                alert('get chat content error');
+                showAlert(cause);
                 break;
             }
             default: {
-                alert('Generic internal error. Please retry');
+                alert('Unknown internal error. Please retry');
             }
         }
     });
