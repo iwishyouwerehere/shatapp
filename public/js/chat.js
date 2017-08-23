@@ -7,6 +7,7 @@ var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
     this.params = params;
     this.id = id;
 };
+var initProcess;
 var client = {
     key: '',
     publicKey: '',
@@ -17,7 +18,15 @@ var client = {
         users: [],
         spam: 0,
         messages: 0
-    };
+    },
+    alert = {
+        $e: null,
+        $alertInfo: null,
+        $title: null,
+        $text: null,
+        $button: null,
+        timeout: null
+    }
 
 /*  EXECUTION   */
 
@@ -25,19 +34,19 @@ function init() {
     // init socket
     socket = io();
 
-    // get key
-    client.key = getKey();
-    if (!client.key) {
-        return Promise.reject('key_not_found');
-    }
-    client.publicKey = encrypt(client.key);
-
     // get chatName
     chat.name = window.location.pathname;
     chat.name = chat.name.substring(0, chat.name.lastIndexOf('/'));
     chat.name = chat.name.substring(chat.name.lastIndexOf('/') + 1, chat.name.length);
     document.querySelector("#info > h1").innerHTML = chat.name;
     document.title = "shatapp@" + chat.name;
+
+    // get key
+    client.key = getKey();
+    if (!client.key) {
+        return Promise.reject('key_not_found');
+    }
+    client.publicKey = encrypt(client.key);
 
     // start of asynchronous phase
     var requestPromises = [];
@@ -51,7 +60,7 @@ function init() {
                 document.getElementById("username").innerHTML = "<span>Username </span>" + userName;
                 resolve();
             } else {
-                reject('username');
+                reject('username_error');
             }
         });
     }))
@@ -218,49 +227,52 @@ function sendMsg() {
 }
 
 function showAlert(type) {
-    var $alert = document.getElementById('alert');
-    var $alertInfo = document.getElementById('alert-info');
-    var $title = $alert.getElementsByTagName("h1")[0];
-    var $text = $alert.getElementsByTagName("p")[0];
-    var $button = $alert.getElementsByTagName("button")[0];
-
+    if (alert.timeout) { clearTimeout(alert.timeout); }
     switch (type) {
         case 'key_not_found': {
-            $title.innerHTML = "Insert a key";
-            $text.innerHTML = "In order to send messages in a chatroom you have to create a private key to crypt your messages. We care about your privacy!";
-            $button.innerHTML = "Set key";
-            $alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
+            alert.$title.innerHTML = "Insert a key";
+            alert.$text.innerHTML = "In order to send messages in a chatroom you have to create a private key to crypt your messages. We care about your privacy!";
+            alert.$button.innerHTML = "Set key";
+            alert.$alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
+            break;
+        }
+        case 'username_error': {
+            alert.$title.innerHTML = "Username error";
+            alert.$text.innerHTML = "There has been an error retrieving a random username for you. We're sorry :(";
+            alert.$button.innerHTML = "Retry";
             break;
         }
     }
 
-    $button.setAttribute("data-type", type);
-    $alert.style.display = "block";
-    $alert.style.opacity = 1;
+    alert.$button.setAttribute("data-type", type);
+    alert.$e.style.display = "block";
+    alert.$e.style.opacity = 1;
 }
 
 function closeAlert() {
-    var $alert = document.getElementById('alert');
-    var $input = $alert.querySelector("input");
-    var $button = $alert.querySelector("button");
+    var $input = alert.$e.querySelector("input");
     var data;
     if ($input) {
         data = $input.value;
     }
-    var type = $button.getAttribute("data-type");
+    var type = alert.$button.getAttribute("data-type");
     switch (type) {
         case 'key_not_found': {
             setKey(data);
-            init();
+            initProcess();
+            break;
+        }
+        case 'username_error': {
+            initProcess();
         }
     }
 
-    $alert.style.opacity = 0;
-    setTimeout(function () {
-        $alert.style.display = "none";
-        if ($input) {
-            $alert.querySelector("form").querySelector("div").removeChild($input);
-        }
+    alert.$e.style.opacity = 0;
+    if ($input) {
+        alert.$e.querySelector("form").querySelector("div").removeChild($input);
+    }
+    alert.timeout = setTimeout(function () {
+        alert.$e.style.display = "none";
     }, 200); // for style purpose only
 }
 
@@ -283,24 +295,37 @@ var documentReady = function () {
     // focus cursor on input box
     document.querySelector("#chat-input > #input").focus();
 
+    // bind alert object to dom elements
+    alert.$e = document.getElementById('alert');
+    alert.$alertInfo = document.getElementById('alert-info');
+    alert.$title = alert.$e.getElementsByTagName("h1")[0];
+    alert.$text = alert.$e.getElementsByTagName("p")[0];
+    alert.$button = alert.$e.getElementsByTagName("button")[0];
+
     // init
-    init().then(function () {
-        console.log('init success');
-    }).catch(function err(cause) {
-        switch (cause) {
-            case 'key_not_found': {
+    initProcess = function () {
+        return init().then(function () {
+            console.log('init success');
+        }).catch(function err(cause) {
+            console.log(cause);
+            switch (cause) {
+                case 'key_not_found': {
+                }
+                case 'username_error': {
+                }
+                case 'chat_content': {
+                    console.log(this);
+                    showAlert(cause);
+                    break;
+                }
+                default: {
+                    alert('Unknown internal error. Please retry');
+                }
             }
-            case 'username': {
-            }
-            case 'chat_content': {
-                showAlert(cause);
-                break;
-            }
-            default: {
-                alert('Unknown internal error. Please retry');
-            }
-        }
-    });
+        });
+    };
+    initProcess();
+
 
 }.bind(this);
 

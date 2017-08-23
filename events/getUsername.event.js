@@ -5,7 +5,7 @@ var generateUsernameAction = require('./../actions/generateUsername.action'),
     JsonRPCError = require('./../resources/types/jsonrpc').error;
 
 module.exports = function getUsernameEvent(socket) {
-    return function eventHandler(request, response) {
+    return function eventHandler(request, response) {     
         // check params
         if (!(request.params && request.params['chatName'])) { response(new JsonRPCResponse({ error: new JsonRPCError(400, "Bad Request", { cause: 'missing chatName parameter' }) }, request.id)); }
         // add socket to chat room

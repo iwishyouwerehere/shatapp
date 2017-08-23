@@ -127,6 +127,10 @@ body {
 }
 
 #alert > form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 999;
   position: fixed;
   left: calc(50% - 225px);
@@ -136,6 +140,19 @@ body {
   border-radius: 8px;
   background-color: #3F51B5;
   box-shadow: 0 0 18px 0 rgba(0,0,0,0.75);
+}
+
+#alert-info {
+  margin-bottom: 32px;
+  color: white;
+}
+
+#alert-info > h1 {
+  margin-top: 0;
+}
+
+#alert-info > p {
+  font-weight: 100;
 }
 
 #chatbox,

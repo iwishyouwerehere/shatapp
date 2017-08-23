@@ -110,18 +110,6 @@ var documentReady = function () {
         $keyView.innerHTML = key;
     }
 
-    // bind to key input change event
-    document.querySelector("form > input").onkeyup = function (e) {
-        if (e && e.target.value != "") {
-            if (key) {
-                document.querySelector("form > #button-join").innerHTML = "Change key";
-            }
-        } else if (key) {
-            document.querySelector("form > #button-join").innerHTML = "Leave";
-        }
-    }.bind(this);
-
-
 }.bind(this);
 
 
