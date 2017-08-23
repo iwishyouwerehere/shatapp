@@ -18,14 +18,6 @@ var client = {
         users: [],
         spam: 0,
         messages: 0
-    },
-    alert = {
-        $e: null,
-        $alertInfo: null,
-        $title: null,
-        $text: null,
-        $button: null,
-        timeout: null
     }
 
 /*  EXECUTION   */
@@ -226,58 +218,37 @@ function sendMsg() {
 
 }
 
-function showAlert(type) {
-    if (alert.timeout) { clearTimeout(alert.timeout); }
-    switch (type) {
-        case 'key_not_found': {
-            alert.$title.innerHTML = "Insert a key";
-            alert.$text.innerHTML = "In order to send messages in a chatroom you have to create a private key to crypt your messages. We care about your privacy!";
-            alert.$button.innerHTML = "Set key";
-            alert.$alertInfo.innerHTML += '<input type="text" placeholder="key" onfocus="this.placeholder = \'\'" onblur="this.placeholder = \'key\'" required>'
-            break;
-        }
-        case 'username_error': {
-            alert.$title.innerHTML = "Username error";
-            alert.$text.innerHTML = "There has been an error retrieving a random username for you. We're sorry :(";
-            alert.$button.innerHTML = "Retry";
-            break;
-        }
-    }
-
-    alert.$button.setAttribute("data-type", type);
-    alert.$e.style.display = "block";
-    alert.$e.style.opacity = 1;
-}
-
-function closeAlert() {
-    var $input = alert.$e.querySelector("input");
-    var data;
-    if ($input) {
-        data = $input.value;
-    }
-    var type = alert.$button.getAttribute("data-type");
-    switch (type) {
-        case 'key_not_found': {
-            setKey(data);
-            initProcess();
-            break;
-        }
-        case 'username_error': {
-            initProcess();
-        }
-    }
-
-    alert.$e.style.opacity = 0;
-    if ($input) {
-        alert.$e.querySelector("form").querySelector("div").removeChild($input);
-    }
-    alert.timeout = setTimeout(function () {
-        alert.$e.style.display = "none";
-    }, 200); // for style purpose only
-}
-
 // DOCUMENT READY
 var documentReady = function () {
+
+    // bind Alerter object to dom elements
+    console.log("alert", Alerter);
+    Alerter.init(document.getElementById("alert"),
+        {
+            'key_not_found': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Insert a key";
+                    Alerter.$text.innerHTML = "In order to send messages in a chatroom you have to create a private key to crypt your messages. We care about your privacy!";
+                    Alerter.$button.innerHTML = "Set key";
+                    Alerter.$input.style.display = "block";
+                },
+                onClose: function (data) {
+                    setKey(data);
+                    initProcess();
+                }
+            },
+            'username_error': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Username error";
+                    Alerter.$text.innerHTML = "There has been an error retrieving a random username for you. We're sorry :(";
+                    Alerter.$button.innerHTML = "Retry";
+                },
+                onClose: function (data) {
+                    initProcess();
+                }
+            }
+        });
+    Alerter.show('loading');
 
     // prevent form from submitting
     document.querySelector("form").addEventListener("submit", function (e) {
@@ -295,17 +266,11 @@ var documentReady = function () {
     // focus cursor on input box
     document.querySelector("#chat-input > #input").focus();
 
-    // bind alert object to dom elements
-    alert.$e = document.getElementById('alert');
-    alert.$alertInfo = document.getElementById('alert-info');
-    alert.$title = alert.$e.getElementsByTagName("h1")[0];
-    alert.$text = alert.$e.getElementsByTagName("p")[0];
-    alert.$button = alert.$e.getElementsByTagName("button")[0];
-
     // init
     initProcess = function () {
         return init().then(function () {
             console.log('init success');
+            Alerter.close();
         }).catch(function err(cause) {
             console.log(cause);
             switch (cause) {
@@ -315,7 +280,10 @@ var documentReady = function () {
                 }
                 case 'chat_content': {
                     console.log(this);
-                    showAlert(cause);
+                    Alerter.show(cause);
+                    setTimeout(function () {
+                        Alerter.show("username_error");
+                    }, 2000);
                     break;
                 }
                 default: {
