@@ -38,6 +38,23 @@ function createChat() {
         if (!response['error']) {
             window.location.href = "/chats/" + response.result + "/chat.html";
         } else {
+            Alerter.show('unknown');
+        }
+    })
+}
+
+function joinChat(chatName) {
+    var request = new JsonRPCRequest('GET', { chatName: chatName }, 0);
+
+    socket.emit("chat_exist", request, function (response) {
+        if (!response['error']) {
+            if (response.result) {
+                window.location.href = "/chats/" + chatName + "/chat.html";
+            } else {
+                Alerter.show('wrong_chatName');
+            }
+        } else {
+            Alerter.show('unknown');
         }
     })
 }
@@ -57,10 +74,17 @@ function access(type) {
 
     // switch based on access type
     switch (type) {
-        case 'join':
+        case 'join': {
             // check if chat exist
+            if (chatName) {
+                joinChat(chatName);
+            }    
+            break;
+        }
+        case 'create': {
             createChat();
             break;
+        }    
     }
 }
 
@@ -122,6 +146,25 @@ var documentReady = function () {
                     setKey(data);
                     var $keyView = document.querySelector("#info p");
                     $keyView.innerHTML = key;
+                }
+            },
+            'wrong_chatName': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Chat don't exist... yet";
+                    Alerter.$text.innerHTML = "The chat name you entered don't correspond to anything on our servers. Please retry";
+                    Alerter.$button.innerHTML = "Continue";
+                },
+                onClose: function (data) {
+                }
+            },
+            'unknown': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Unknown Error";
+                    Alerter.$text.innerHTML = "We don't know what happened D:<br>Try reloading the page!";
+                    Alerter.$button.innerHTML = "Reload";
+                },
+                onClose: function (data) {
+                    window.location.reload();
                 }
             }
         });

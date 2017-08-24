@@ -26,9 +26,12 @@
     </div>
 
     <form id="content">
-        <input type="text" id="input-key" placeholder="chat name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'chat name'"
-            required>
-        <button id="button-join" onclick="access('join')">Join</button>
+        <input type="text" id="input-key" placeholder="chat name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'chat name'" required tabindex="0">
+        <div>
+            <button id="button-join" onclick="access('join')">Join</button>
+            <p>or</p>
+            <button id="button-create " onclick="access('create')">Create</button>
+        </div>
     </form>
 
     <div id="alert"></div>

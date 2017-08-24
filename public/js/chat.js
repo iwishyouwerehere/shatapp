@@ -232,7 +232,7 @@ function sendMsg() {
     socket.emit('send_message', request, function messageSent(response) {
         if (!response['error']) {
         } else {
-            alert(response.error);
+            Alerter.show('unknown');
         }
     })
 

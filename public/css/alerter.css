@@ -80,8 +80,8 @@
 }
 
 #alert button {
-  background-color: rgba(0,0,0,.2);
-  border-color: rgba(0,0,0,.075);
+  background-color: rgb(66, 84, 185);
+  border-color: rgb(92, 110, 211);
 }
 @keyframes spin {
   100% {
