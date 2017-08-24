@@ -25,6 +25,8 @@ chatEmitter.on('create_chat', function sendToCheckChatLifecycle(chatName) {
 // create and manage checkUsersActivity process
 var p_checkUsersActivity = child_process.fork(serverProcesses.checkUsersActivity, [], { execArgv: ['--debug=5860'] });
 p_checkUsersActivity.on('message', function onRemovedUser(removed) {
+    // emit user_leaved event
+    chatEmitter.emit('user_leaved', { chatName: removed.chatName, userName: removed.userName });
     // remove username client by socket room (also check if it is no longer connected)
     if (io.sockets.connected[removed.socketId]) {
         io.sockets.connected[removed.socketId].leave(removed.chatName);
@@ -53,6 +55,12 @@ io.on('connection', function (socket) {
 // define socket.io internal events
 chatEmitter.on('chat_deleted', function (chatName) {
     io.to(chatName).emit('chat_deleted', new JsonRPCRequest('SEND', { chatName: chatName }));
+});
+chatEmitter.on('user_joined', function (info) {
+    io.to(info.chatName).emit('user_joined', new JsonRPCRequest('SEND', { userName: userName }));
+});
+chatEmitter.on('user_leaved', function (info) {
+    io.to(info.chatName).emit('user_leaved', new JsonRPCRequest('SEND', { userName: userName }));
 });
 
 // server listen
