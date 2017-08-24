@@ -20,9 +20,9 @@ function init() {
     // get saved key if there's one
     key = getKey();
     if (key) {
-        var $keyView = document.querySelector("#info > p");
-        $keyView.style.opacity = 1;
+        var $keyView = document.querySelector("#info p");
         $keyView.innerHTML = key;
+        setTimeout(function () { $keyView.style.opacity = 1; }, 0); // for style purpose only
     }
 }
 
@@ -51,7 +51,7 @@ function createChat() {
 
 function access(type) {
     // get key value and set it
-    var $inputKey = document.querySelector("form > input");
+    var $inputKey = document.querySelector("form input");
     var chatName = $inputKey.value;
     setTimeout(function () { $inputKey.value = "" }, 0); // for style purpose only
 
@@ -60,12 +60,6 @@ function access(type) {
         case 'join':
             // check if chat exist
             createChat();
-            break;
-        case 'leave':
-            removeKey();
-            var $keyView = document.querySelector("#info > p");
-            $keyView.style.opacity = 0;
-            setTimeout(function () { $keyView.innerHTML = ""; }, 200);
             break;
     }
 }
@@ -126,7 +120,7 @@ var documentReady = function () {
                 },
                 onClose: function (data) {
                     setKey(data);
-                    var $keyView = document.querySelector("#info > p");
+                    var $keyView = document.querySelector("#info p");
                     $keyView.innerHTML = key;
                 }
             }

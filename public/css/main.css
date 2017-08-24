@@ -13,9 +13,17 @@ input[type="text"] {
 }
 
 button {
-  background-color: #6b7ee5;
-  border-color: #6b7ee5;
+  background-color: rgba(0,0,0,.2);
+  border-color: rgba(0,0,0,.075);
   color: white;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+button.blue {
+  background-color: #495ece;
+  border-color: #495ece;
 }
 
 #info {
@@ -33,6 +41,38 @@ button {
   text-align: center;
 }
 
+#info img {
+  display: block;
+  margin: auto;
+}
+
+#info img:last-of-type {
+  margin-top: 4px;
+}
+
+#info p {
+  font-size: small;
+  background-color: rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  height: 50px;
+  min-width: 75px;
+  max-width: 300px;
+  padding: 8px 16px;
+  line-height: 34px;
+  margin: 24px 0 0;
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity .4s linear;
+}
+
+#info p:hover {
+  cursor: pointer;
+  opacity: .6 !important;
+  transition: opacity .1s linear;
+}
+
 #content {
   flex-grow: 1;
   height: 100%;
@@ -48,5 +88,44 @@ body {
 
   to {
     opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    flex-direction: column;
+  }
+
+  #info {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    width: 100% !important;
+    padding: 4px 16px;
+  }
+
+  #info img {
+    display: inline-block;
+    max-height: 48px;
+    max-width: 100px;
+    vertical-align: middle;
+  }
+
+  #info p {
+    margin: 0;
+    max-width: 30%;
+    height: 30px;
+    padding: 6px 10px;
+    line-height: initial;
+  }
+
+  #info img:last-of-type {
+    display: none;
+  }
+
+  #content {
+    margin-top: 0 !important;
+    width: 100%;
   }
 }

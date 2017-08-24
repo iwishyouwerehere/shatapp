@@ -15,7 +15,7 @@ var client = {
 },
     chat = {
         name: '',
-        users: [],
+        users: {},
         spam: 0,
         messages: 0
     }
@@ -30,8 +30,8 @@ function init() {
     chat.name = window.location.pathname;
     chat.name = chat.name.substring(0, chat.name.lastIndexOf('/'));
     chat.name = chat.name.substring(chat.name.lastIndexOf('/') + 1, chat.name.length);
-    document.querySelector("#info > h1").innerHTML = chat.name;
     document.title = "shatapp@" + chat.name;
+    document.getElementById("chat-info").getElementsByTagName("h2")[0].innerHTML = "#" + chat.name;
 
     // get key
     client.key = getKey();
@@ -53,7 +53,6 @@ function init() {
             console.log(response);
             if (!response['error']) {
                 client.userName = response.result;
-                document.getElementById("username").innerHTML = "<span>Username </span>" + client.userName;
                 resolve();
             } else {
                 reject('username_error');
@@ -76,11 +75,28 @@ function init() {
         // register to socket events
         socket.on('new_message', function onNewMessage(request) {
             updateChat(request.params['msg']);
-        })
+        });
         socket.on('chat_deleted', function onChatDeleted(request) {
             Alerter.show('chat_gone');
-        })
+        });
+        socket.on('user_joined', function onUserJoined(request) {
+            chat.users[request.params.userName] = { color: getRandomColor() };
+            updateUsersList();
+        });
+        socket.on('user_leaved', function onUserLeaved(request) {
+            delete chat.users[request.params.userName];
+            updateUsersList();
+        });
     });
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 /**
@@ -171,12 +187,13 @@ function updateChat(messages) {
                 var username = decrypt($xml.getElementsByTagName("username")[0].innerHTML);
                 var text = decrypt($xml.getElementsByTagName("content")[0].innerHTML);
 
-                if ($last_chat_message && $last_chat_message.getElementsByTagName("h6")[0].innerHTML == username) {
+                if ($last_chat_message && $last_chat_message.getElementsByTagName("h4")[0].innerHTML == username) {
                     // append on last message
                     $last_chat_message.innerHTML += '<p>' + text + '</p>';
                 } else {
                     // append new message
-                    $chat_messages.innerHTML += ('<div class="chat-message"><h6>' + username + '</h6><p>' + text + '</p></div>');
+                    var color = (chat.users[username]) ? chat.users[username].color : '#495ece';
+                    $chat_messages.innerHTML += ('<div class="chat-message"><h4 style="color: ' + color + ';">' + username + '</h4><p>' + text + '</p></div>');
                 }
             } else {
                 spam++;
@@ -188,7 +205,7 @@ function updateChat(messages) {
     chat.spam += spam;
     chat.messages += messages.length;
     // update chatLog graphics
-    document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chat.spam + "/" + chat.messages;
+    // document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chat.spam + "/" + chat.messages;
 }
 
 /**

@@ -31,6 +31,7 @@
   background-color: #3F51B5;
   background-color: #495ece;
   box-shadow: 0 0 18px 0 rgba(0,0,0,0.75);
+  padding: 24px;
   transition: width .2s linear, height .2s linear, opacity .2s linear;
 }
 
@@ -77,9 +78,21 @@
   display: none;
   margin: auto;
 }
+
+#alert button {
+  background-color: rgba(0,0,0,.2);
+  border-color: rgba(0,0,0,.075);
+}
 @keyframes spin {
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+@media (max-width: 540px) {
+  #alert form {
+    width: 100%;
+    height: 50%;
+    border-radius: 0;
   }
 }

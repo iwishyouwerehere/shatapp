@@ -18,6 +18,6 @@ module.exports = function (app) {
             res.sendFile(path.join(__dirname + '/../public/html/chat.html'));
         } else {
             res.sendFile(path.join(__dirname + '/../public/html/chat-not-found.html'));
-        }    
+        }
     });
 }

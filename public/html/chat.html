@@ -18,19 +18,25 @@
 
 <body>
     <div id="info">
-        <h1></h1>
+        <a href="../../">
+            <img src="../../logos/logo_small.png">
+            <img src="../../logos/logo_name.png">
+            <img src="../../logos/logo_subline.png">
+        </a>
         <p onclick="Alerter.show('edit_key')"></p>
-        <a href="../../">back to HomePage</a>
-        <div id="chat-log">
-            <small id="username"></small>
-            <small id="spam-count"></small>
-        </div>
     </div>
     <div id="content">
+        <div id="chat-info">
+            <h2></h2>
+            <div id="chat-info-icons">
+                <i class="ion-person-stalker"></i>
+                <i class="ion-ios-help-outline"></i>
+            </div>
+        </div>
         <div id="chat-messages"></div>
         <div id="chat-input">
             <textarea type="text" id="input" tabindex="0"></textarea>
-            <button type="submit" onclick="sendMsg()" tabindex="1">Invia</button>
+            <button class="blue" type="submit" onclick="sendMsg()" tabindex="1">Invia</button>
         </div>
     </div>
 

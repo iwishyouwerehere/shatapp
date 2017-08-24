@@ -1,39 +1,21 @@
-#info > img:last-of-type {
-  margin-top: 4px;
-}
-
-#info > p {
-  font-size: small;
-  background-color: rgba(255, 255, 255, .1);
-  border-radius: 8px;
-  height: 50px;
-  min-width: 75px;
-  padding: 8px 16px;
-  line-height: 34px;
-  margin: 24px 0 0;
-  opacity: 0;
-  transition: opacity .4s linear;
-}
-
-#info > p:hover {
-  cursor: pointer;
-  opacity: .6 !important;
-  transition: opacity .1s linear;
-}
-
 form {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #495ece;
 }
 
-form > * {
+form * {
   margin: 8px 0;
   text-align: center;
 }
 
-form > button {
+form input {
+  display: block;
+}
+
+form button {
   min-height: 25px;
   min-width: 75px;
 }
