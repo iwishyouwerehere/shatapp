@@ -19,6 +19,7 @@
 <body>
     <div id="info">
         <h1></h1>
+        <p onclick="Alerter.show('edit_key')"></p>
         <a href="../../">back to HomePage</a>
         <div id="chat-log">
             <small id="username"></small>
@@ -33,17 +34,7 @@
         </div>
     </div>
 
-    <div id="alert">
-        <form>
-            <i class="ion-load-c"><span>Loading chat</span></i>
-            <div>
-                <h1></h1>
-                <p></p>
-                <input type="text" placeholder="key" onfocus="this.placeholder = ''" onblur="this.placeholder = 'key'" required>
-            </div>
-            <button onclick="Alerter.close()"></button>
-        </form>
-    </div>
+    <div id="alert"></div>
 </body>
 
 </html>

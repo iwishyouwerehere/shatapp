@@ -1,6 +1,5 @@
-#info > h4 {
-  margin-top: 0;
-  font-weight: lighter;
+#info > img:last-of-type {
+  margin-top: 4px;
 }
 
 #info > p {
@@ -11,9 +10,15 @@
   min-width: 75px;
   padding: 8px 16px;
   line-height: 34px;
-  margin: 8px 0 0;
+  margin: 24px 0 0;
   opacity: 0;
   transition: opacity .4s linear;
+}
+
+#info > p:hover {
+  cursor: pointer;
+  opacity: .6 !important;
+  transition: opacity .1s linear;
 }
 
 form {

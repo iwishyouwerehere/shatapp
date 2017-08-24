@@ -8,21 +8,28 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/alerter.css">
+    <link rel="stylesheet" type="text/css" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <script src="js/index.js" type="text/javascript"></script>
+    <script src="js/alerter.js" type="text/javascript"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
     <div id="info">
-        <h1>shatapp</h1>
-        <h4>Create, join, anonymously</h4>
-        <p></p>
+        <img src="logos/logo_small.png">
+        <img src="logos/logo_name.png">
+        <img src="logos/logo_subline.png">
+        <p onclick="Alerter.show('edit_key')"></p>
     </div>
 
     <form id="content">
-        <input type="text" id="input-key" placeholder="chat name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'chat name'" required>
+        <input type="text" id="input-key" placeholder="chat name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'chat name'"
+            required>
         <button id="button-join" onclick="access('join')">Join</button>
     </form>
+
+    <div id="alert"></div>
 </body>
 
 </html>

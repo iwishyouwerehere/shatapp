@@ -38,6 +38,9 @@ function init() {
     if (!client.key) {
         return Promise.reject('key_not_found');
     }
+    var $keyView = document.querySelector("#info > p");
+    $keyView.innerHTML = client.key;
+    $keyView.style.opacity = 1;
     client.publicKey = encrypt(client.key);
 
     // start of asynchronous phase
@@ -47,9 +50,10 @@ function init() {
     requestPromises.push(new Promise(function executor(resolve, reject) {
         var request = new JsonRPCRequest('GET', { 'chatName': chat.name }, 0);
         socket.emit("get_username", request, function receiveUsername(response) {
+            console.log(response);
             if (!response['error']) {
-                userName = response.result;
-                document.getElementById("username").innerHTML = "<span>Username </span>" + userName;
+                client.userName = response.result;
+                document.getElementById("username").innerHTML = "<span>Username </span>" + client.userName;
                 resolve();
             } else {
                 reject('username_error');
@@ -74,8 +78,7 @@ function init() {
             updateChat(request.params['msg']);
         })
         socket.on('chat_deleted', function onChatDeleted(request) {
-            alert('chat gone');
-            window.location.href = '/';
+            Alerter.show('chat_gone');
         })
     });
 }
@@ -246,6 +249,40 @@ var documentReady = function () {
                 onClose: function (data) {
                     initProcess();
                 }
+            },
+            'chat_gone': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Chat gone";
+                    Alerter.$text.innerHTML = "The chat lifetime has ended up here. Nice to see you last so long! Grab your things and come back chatting!";
+                    Alerter.$button.innerHTML = "Go to homepage";
+                },
+                onClose: function (data) {
+                    window.location.href = '/';
+                }
+            },
+            'edit_key': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Manage key";
+                    Alerter.$text.innerHTML = "Here you can change your key with a new one";
+                    Alerter.$input.style.display = "block";
+                    Alerter.$input.value = client.key;
+                    Alerter.$button.innerHTML = "Save edit";
+                },
+                onClose: function (data) {
+                    setKey(data);
+                    var $keyView = document.querySelector("#info > p");
+                    $keyView.innerHTML = client.key;
+                }
+            },
+            'unknown': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Unknown Error";
+                    Alerter.$text.innerHTML = "We don't know what happened D:<br>Try reloading the page!";
+                    Alerter.$button.innerHTML = "Reload";
+                },
+                onClose: function (data) {
+                    window.location.reload();
+                }
             }
         });
     Alerter.show('loading');
@@ -270,7 +307,7 @@ var documentReady = function () {
     initProcess = function () {
         return init().then(function () {
             console.log('init success');
-            Alerter.close();
+            Alerter.close(true);
         }).catch(function err(cause) {
             console.log(cause);
             switch (cause) {
@@ -281,13 +318,10 @@ var documentReady = function () {
                 case 'chat_content': {
                     console.log(this);
                     Alerter.show(cause);
-                    setTimeout(function () {
-                        Alerter.show("username_error");
-                    }, 2000);
                     break;
                 }
                 default: {
-                    alert('Unknown internal error. Please retry');
+                    Alerter.show('unknown');
                 }
             }
         });

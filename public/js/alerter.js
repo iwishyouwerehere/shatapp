@@ -1,3 +1,39 @@
+function generateAlertElements() {
+    // create elements
+    Alerter.$form = document.createElement("FORM");
+    Alerter.$form.addEventListener("submit", function (e) {
+        e.preventDefault();
+    });
+
+    Alerter.$loading = document.createElement("i");
+    Alerter.$loading.classList.add('ion-load-c');
+    var span = document.createElement("span");
+    span.innerHTML = "Loading...";
+    Alerter.$loading.appendChild(span);
+
+    Alerter.$alertInfo = document.createElement("DIV");
+
+    Alerter.$title = document.createElement("h1");
+
+    Alerter.$text = document.createElement("p");
+
+    Alerter.$input = document.createElement("input");
+    Alerter.$input.setAttribute('type', 'text');
+    Alerter.$input.setAttribute('required', 'true');
+
+    Alerter.$button = document.createElement("BUTTON");
+    Alerter.$button.setAttribute('onclick', "Alerter.close()");
+
+    // append elements
+    Alerter.$e.appendChild(Alerter.$form);
+    Alerter.$form.appendChild(Alerter.$loading);
+    Alerter.$form.appendChild(Alerter.$alertInfo);
+    Alerter.$alertInfo.appendChild(Alerter.$title);
+    Alerter.$alertInfo.appendChild(Alerter.$text);
+    Alerter.$alertInfo.appendChild(Alerter.$input);
+    Alerter.$form.appendChild(Alerter.$button);
+}
+
 var Alerter = {
     $e: null,
     $form: null,
@@ -7,25 +43,24 @@ var Alerter = {
     $input: null,
     $button: null,
     $loading: null,
-    timeout: null,
+    timeouts: {
+        onShow: null,
+        onClose: null
+    },
     actions: null,
+    stack: [],
     init: function (alert, actions) {
         if (!(alert instanceof HTMLElement && actions)) { return false; }
         this.actions = actions;
         this.$e = alert;
-        this.$form = this.$e.getElementsByTagName('form')[0];
-        this.$alertInfo = this.$e.getElementsByTagName('div')[0];
-        this.$title = this.$e.getElementsByTagName("h1")[0];
-        this.$text = this.$e.getElementsByTagName("p")[0];
-        this.$input = this.$e.getElementsByTagName("input")[0];
-        this.$button = this.$e.getElementsByTagName("button")[0];
-        this.$loading = this.$e.getElementsByTagName("i")[0];
+        generateAlertElements();
         return true;
     },
     show: function showAlert(type) {
-        if (this.timeout) { clearTimeout(this.timeout); }
+        this.stack.push({ type: type });
+        if (this.timeouts.onClose) { clearTimeout(this.timeouts.onClose); }
         this.$form.style.opacity = 0;
-        setTimeout(function () {
+        this.timeouts.onShow = setTimeout(function () {
             this.reset();
             if (type != "loading") {
                 this.actions[type].onShow();
@@ -39,30 +74,38 @@ var Alerter = {
         }.bind(this), 200);
 
         this.$button.setAttribute("data-type", type);
-        this.$e.style.display = "block";
+        this.$e.style.visibility = "visible";
         this.$e.style.opacity = 1;
     },
-    close: function closeAlert() {
-        var $input = this.$e.querySelector("input");
+    close: function closeAlert(force) {
+        // check onShow timeout
+        if (this.timeouts.onShow) { clearTimeout(this.timeouts.onShow); }
+        // get the input value if needed
         var data;
-        if ($input) {
-            data = $input.value;
+        var display = this.$input.style.display ? this.$input.style.display : getComputedStyle(this.$input, null).display;
+        if (this.$input && display != "none") {
+            // get data of the input elemente if there's one
+            console.log(this.$input.style.display);
+            data = this.$input.value;
+            // return if value is empty
+            if (!data) { return; }
         }
+        // manage stack on closing
+        if (this.stack.length == 0) { return; }
+        if (force) { this.stack = []; console.log('resettato'); }
+        else { this.stack.pop(); }
+        // check for alert type and run the type-specific function
         var type = this.$button.getAttribute("data-type");
-        if (type != "loading") {
+        if (type != "loading" && !force) {
             this.actions[type].onClose(data);
         } else {
             this.$loading.style.opacity = 0;
         }
-
+        // graphically close the alert
+        this.$form.style.opacity = 0;
         this.$e.style.opacity = 0;
-        if ($input) {
-            this.$e.querySelector("form").querySelector("div").removeChild($input);
-        }
-        this.timeout = setTimeout(function () {
-            this.$e.style.display = "none";
-            this.$loading.style.display = "none";
-            this.$button.style.display = "block";
+        this.timeouts.onClose = setTimeout(function () {
+            this.$e.style.visibility = "hidden";
             this.reset();
         }.bind(this), 200); // for style purpose only
     },

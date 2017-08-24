@@ -16,6 +16,14 @@ var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
  */
 function init() {
     socket = io();
+
+    // get saved key if there's one
+    key = getKey();
+    if (key) {
+        var $keyView = document.querySelector("#info > p");
+        $keyView.style.opacity = 1;
+        $keyView.innerHTML = key;
+    }
 }
 
 
@@ -76,13 +84,23 @@ function getKey() {
 }
 
 /**
+ * Set locally the given key
+ * 
+ * @param {any} key
+ */
+function setKey(key) {
+    this.key = key;
+    if (typeof (Storage) !== "undefined") {
+        sessionStorage.setItem("key", key);
+    }
+}
+/**
  * Remove locally saved private key
  * 
  * @returns {boolean} if browser supports storage
  */
 function removeKey() {
     this.key = undefined;
-    document.dispatchEvent(keyChangeEvent);
     if (typeof (Storage) !== "undefined") {
         sessionStorage.removeItem("key");
         return true;
@@ -94,6 +112,26 @@ function removeKey() {
 // DOCUMENT READY
 var documentReady = function () {
 
+    // bind Alerter object to dom elements
+    console.log("alert", Alerter);
+    Alerter.init(document.getElementById("alert"),
+        {
+            'edit_key': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Manage key";
+                    Alerter.$text.innerHTML = "Here you can change your key with a new one";
+                    Alerter.$input.style.display = "block";
+                    Alerter.$input.value = key;
+                    Alerter.$button.innerHTML = "Save edit";
+                },
+                onClose: function (data) {
+                    setKey(data);
+                    var $keyView = document.querySelector("#info > p");
+                    $keyView.innerHTML = key;
+                }
+            }
+        });
+
     // init
     init();
 
@@ -101,14 +139,6 @@ var documentReady = function () {
     document.querySelector("form").addEventListener("submit", function (e) {
         e.preventDefault();
     });
-
-    // get saved key if there's one
-    key = getKey();
-    if (key) {
-        var $keyView = document.querySelector("#info > p");
-        $keyView.style.opacity = 1;
-        $keyView.innerHTML = key;
-    }
 
 }.bind(this);
 
