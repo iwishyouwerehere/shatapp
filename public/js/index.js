@@ -19,11 +19,11 @@ function init() {
 
     // get saved key if there's one
     key = getKey();
+    var $keyView = document.querySelector("#info p");
     if (key) {
-        var $keyView = document.querySelector("#info p");
         $keyView.innerHTML = key;
         setTimeout(function () { $keyView.style.opacity = 1; }, 0); // for style purpose only
-    }
+    } else { $keyView.style.display = 'none'; }
 }
 
 
@@ -79,13 +79,14 @@ function access(type) {
             // check if chat exist
             if (chatName) {
                 joinChat(chatName);
-            }    
+            }
             break;
         }
         case 'create': {
+            $inputKey.blur();
             createChat();
             break;
-        }    
+        }
     }
 }
 

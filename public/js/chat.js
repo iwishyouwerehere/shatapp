@@ -40,9 +40,6 @@ function init() {
         };
     }
     document.getElementById("chat-info-users").querySelector("span").innerHTML = Object.keys(chat.users).length;
-    
-    updateUsersList();
-
 
     // get key
     client.key = getKey();
@@ -63,8 +60,25 @@ function init() {
         socket.emit("get_username", request, function receiveUsername(response) {
             console.log(response);
             if (!response['error']) {
-                client.userName = response.result;
+                client.userName = response.result.userName || 'unknown';
                 document.getElementById("chat-info-username").querySelector("span").innerHTML = client.userName;
+                chat.users[client.userName] = { color: getRandomColor() };
+                // init users-list
+                var $usersList = document.getElementById("chat-info-users-list");
+                var $p = document.createElement('p');
+                $p.setAttribute('class', 'users-list-item users-list-header');
+                $p.innerHTML = "me";
+                $usersList.appendChild($p);
+                var update = {};
+                update[client.userName] = {
+                    color: chat.users[client.userName].color
+                }
+                updateUsersList(update);
+                $p = document.createElement('p');
+                $p.setAttribute('class', 'users-list-item users-list-header');
+                $p.innerHTML = "others";
+                $usersList.appendChild($p);
+                updateUsersList(chat.users);
                 resolve();
             } else {
                 reject('username_error');
@@ -146,9 +160,9 @@ function onOpenChatInfo(event, type) {
         default: {
             if ($chatInfo.getAttribute('data-type') == 'users') {
                 $chatInfo.style.height = '56px';
-            }    
+            }
             $chatInfo.setAttribute('data-type', '');
-        }    
+        }
     }
 }
 
@@ -261,14 +275,14 @@ function updateChat(messages) {
     document.getElementById("chat-info-spam").querySelector("span").innerHTML = chat.spam + "/" + chat.messages;
 }
 
-function updateUsersList() {
+function updateUsersList(users) {
     var $usersList = document.getElementById("chat-info-users-list");
-    for (key in chat.users) {
-        if (chat.users.hasOwnProperty(key)) {
+    for (key in users) {
+        if (users.hasOwnProperty(key)) {
             var $p = document.createElement('p');
             var $span = document.createElement('span');
             $p.setAttribute('class', 'users-list-item');
-            $span.style.backgroundColor = chat.users[key].color;
+            $span.style.backgroundColor = users[key].color;
             $p.appendChild($span);
             $p.innerHTML += key;
             $usersList.appendChild($p);

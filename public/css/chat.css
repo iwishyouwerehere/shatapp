@@ -41,7 +41,7 @@
   border-radius: 2px;
   color: white;
   flex-shrink: 0;
-  transition: height .4s ease-in-out;
+  transition: height .2s ease-in-out;
   overflow: hidden;
 }
 
@@ -127,6 +127,11 @@
   display: inline-block;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+.users-list-header {
+  font-size: small;
+  color: #37427f;
 }
 
 #chat-messages {
