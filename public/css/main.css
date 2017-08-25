@@ -18,6 +18,25 @@ body {
   text-align: center;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 2px;
+  background-color: #f1f1f1;
+
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background-color: rgba(92, 110, 211, 1);
+  height: 60px;
+}
+
+-webkit-overflow-scrolling: touch;
+/* lets it scroll lazy */
+
 input[type="text"] {
   text-align: center;
 }
@@ -85,6 +104,7 @@ button {
 #content {
   flex-grow: 1;
   height: 100%;
+  overflow: hidden;
 }
 
 body {

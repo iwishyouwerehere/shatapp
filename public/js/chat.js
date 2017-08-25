@@ -15,7 +15,8 @@ var client = {
 },
     chat = {
         name: '',
-        users: {},
+        users: {
+        },
         spam: 0,
         messages: 0
     }
@@ -32,6 +33,16 @@ function init() {
     chat.name = chat.name.substring(chat.name.lastIndexOf('/') + 1, chat.name.length);
     document.title = "shatapp@" + chat.name;
     document.getElementById("chat-info").getElementsByTagName("h2")[0].innerHTML = "#" + chat.name;
+
+    for (var i = 0; i < 20; i++) {
+        chat.users[getRandomColor()] = {
+            color: getRandomColor()
+        };
+    }
+    document.getElementById("chat-info-users").querySelector("span").innerHTML = Object.keys(chat.users).length;
+    
+    updateUsersList();
+
 
     // get key
     client.key = getKey();
@@ -53,12 +64,13 @@ function init() {
             console.log(response);
             if (!response['error']) {
                 client.userName = response.result;
+                document.getElementById("chat-info-username").querySelector("span").innerHTML = client.userName;
                 resolve();
             } else {
                 reject('username_error');
             }
         });
-    }))
+    }));
     requestPromises.push(new Promise(function executor(resolve, reject) {
         var request = new JsonRPCRequest('GET', { 'chatName': chat.name }, 0);
         socket.emit("get_chat_content", request, function (response) {
@@ -97,6 +109,47 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+function onOpenChatInfo(event, type) {
+    event.stopPropagation();
+    var $chatInfo = document.getElementById("chat-info");
+    var $chatInfoLog = document.getElementById("chat-info-log");
+    var $chatInfoUsersList = document.getElementById("chat-info-users-list");
+    var $iconUsersList = document.getElementById("icon-users-list");
+    switch (type) {
+        case 'info': {
+            if ($chatInfo.getAttribute('data-type') == type) {
+                $chatInfo.style.height = '56px';
+                $chatInfo.setAttribute('data-type', '');
+            } else {
+                console.log(getComputedStyle($chatInfoLog, null).height);
+                var height = ($chatInfoLog.style.height) ? $chatInfoLog.style.height : getComputedStyle($chatInfoLog, null).height;
+                height = Number(height.substring(0, height.indexOf('p')));
+                height += 56;
+                $chatInfo.style.height = height + 'px';
+                console.log(height);
+                $chatInfo.setAttribute('data-type', type);
+            }
+            break;
+        }
+        case 'users': {
+            if ($chatInfo.getAttribute('data-type') == type) {
+                $chatInfo.style.height = '56px';
+                $chatInfo.setAttribute('data-type', '');
+            } else {
+                $chatInfo.style.height = '356px';
+                $chatInfo.setAttribute('data-type', type);
+            }
+            break;
+        }
+        default: {
+            if ($chatInfo.getAttribute('data-type') == 'users') {
+                $chatInfo.style.height = '56px';
+            }    
+            $chatInfo.setAttribute('data-type', '');
+        }    
+    }
 }
 
 /**
@@ -205,7 +258,22 @@ function updateChat(messages) {
     chat.spam += spam;
     chat.messages += messages.length;
     // update chatLog graphics
-    // document.getElementById("spam-count").innerHTML = "<span>Spam </span>" + chat.spam + "/" + chat.messages;
+    document.getElementById("chat-info-spam").querySelector("span").innerHTML = chat.spam + "/" + chat.messages;
+}
+
+function updateUsersList() {
+    var $usersList = document.getElementById("chat-info-users-list");
+    for (key in chat.users) {
+        if (chat.users.hasOwnProperty(key)) {
+            var $p = document.createElement('p');
+            var $span = document.createElement('span');
+            $p.setAttribute('class', 'users-list-item');
+            $span.style.backgroundColor = chat.users[key].color;
+            $p.appendChild($span);
+            $p.innerHTML += key;
+            $usersList.appendChild($p);
+        }
+    }
 }
 
 /**
@@ -289,6 +357,15 @@ var documentReady = function () {
                     setKey(data);
                     var $keyView = document.querySelector("#info > p");
                     $keyView.innerHTML = client.key;
+                }
+            },
+            'help': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Let us help you";
+                    Alerter.$text.innerHTML = "This is a chat room. You can write, anyone can write, only people with the same key as you can understand your messages.<br>Want to <a href=\'https://github.com/kristiannotari/shatapp\'>read more</a> ?";
+                    Alerter.$button.innerHTML = "Understood";
+                },
+                onClose: function (data) {
                 }
             },
             'unknown': {

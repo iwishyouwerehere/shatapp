@@ -33,22 +33,35 @@
 }
 
 #chat-info {
+  position: relative;
   width: 100%;
   height: 56px;
   background-color: #495ece;
   margin-bottom: 16px;
   border-radius: 2px;
   color: white;
+  flex-shrink: 0;
+  transition: height .4s ease-in-out;
+  overflow: hidden;
+}
+
+#chat-info-toolbar:hover {
+  cursor: pointer;
+}
+
+#chat-info-toolbar {
+  width: 100%;
+  height: 56px;
+  padding-left: 16px;
+  padding-right: 8px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
-  flex-shrink: 0;
 }
 
-#chat-info:hover {
-  cursor: pointer;
+#chat-info-toolbar h2 {
+  max-width: calc(100% - 136px);
 }
 
 #chat-info-icons > i {
@@ -61,6 +74,59 @@
 
 #chat-info-icons > i:hover {
   opacity: .6;
+}
+
+#chat-info-content {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  padding-bottom: 16px;
+}
+
+#chat-info-log {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: small;
+  padding: 0 16px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+#chat-info-log p {
+  font-weight: 600;
+  margin-right: 24px;
+  text-align: left;
+}
+
+#chat-info-log p:last-of-type {
+  margin-right: 0;
+}
+
+#chat-info-log span {
+  font-weight: 100;
+}
+
+#chat-info-users-list {
+  margin-left: -20px;
+  margin-right: -20px;
+  overflow-y: scroll;
+  padding-left: 24px;
+  text-align: left;
+}
+
+.users-list-item {
+  position: relative;
+  margin: 6px 0;
+  padding-left: 16px;
+}
+
+.users-list-item span {
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 #chat-messages {
@@ -145,10 +211,13 @@
     opacity: 1;
   }
 }
-
 @media (max-width: 720px) {
   #chat-info {
     border-radius: 0;
+  }
+
+  #chat-info-log {
+    height: 62px;
   }
 
   #chat-input > button {

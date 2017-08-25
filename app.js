@@ -35,6 +35,7 @@ io.on('connection', function (socket) {
     socket.on('send_message', socketEvents.sendMessage);
     socket.on('get_username', socketEvents.getUsername);
     socket.on('get_chat_content', socketEvents.getChatContent);
+    socket.on('exist_chat', socketEvents.existChat);
 });
 // define socket.io internal events
 chatEmitter.on('chat_deleted', function (chatName) {

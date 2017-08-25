@@ -4,6 +4,7 @@ module.exports = function initEvents(socket) {
         createChat: require('./createChat.event')(socket),
         sendMessage: require('./sendMessage.event')(socket),
         getUsername: require('./getUsername.event')(socket),
-        getChatContent: require('./getChatContent.event')(socket)
+        getChatContent: require('./getChatContent.event')(socket),
+        existChat: require('./existChat.event')(socket)
     }
 }

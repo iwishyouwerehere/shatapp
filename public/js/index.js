@@ -40,13 +40,14 @@ function createChat() {
         } else {
             Alerter.show('unknown');
         }
-    })
+    });
 }
 
 function joinChat(chatName) {
     var request = new JsonRPCRequest('GET', { chatName: chatName }, 0);
 
-    socket.emit("chat_exist", request, function (response) {
+    socket.emit("exist_chat", request, function (response) {
+        console.log(response);
         if (!response['error']) {
             if (response.result) {
                 window.location.href = "/chats/" + chatName + "/chat.html";
@@ -56,7 +57,7 @@ function joinChat(chatName) {
         } else {
             Alerter.show('unknown');
         }
-    })
+    });
 }
 
 /**
@@ -151,7 +152,7 @@ var documentReady = function () {
             'wrong_chatName': {
                 onShow: function () {
                     Alerter.$title.innerHTML = "Chat don't exist... yet";
-                    Alerter.$text.innerHTML = "The chat name you entered don't correspond to anything on our servers. Please retry";
+                    Alerter.$text.innerHTML = "The chat name you entered doesn't correspond to anything on our servers. Please retry";
                     Alerter.$button.innerHTML = "Continue";
                 },
                 onClose: function (data) {

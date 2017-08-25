@@ -9,7 +9,7 @@ body {
   justify-content: flex-end;
 }
 
-form {
+#content {
   width: 100%;
   height: 50%;
   display: flex;
@@ -20,23 +20,38 @@ form {
   background-color: #495ece;
 }
 
-form * {
+#content * {
   margin: 8px 0;
   text-align: center;
 }
 
-form input {
+#content input {
   display: block;
 }
 
-form button {
+#content button {
   min-height: 25px;
   min-width: 75px;
 }
 
-form p {
+#content p {
   display: inline-block;
   font-size: small;
   color: white;
   margin: 0 8px;
+}
+@media (max-width: 720px) {
+  #info {
+    flex-direction: column;
+  }
+
+  #info img {
+    display: block;
+    max-height: 100px;
+    max-width: 150px;
+  }
+
+  #info p {
+    margin: 24px 0 0;
+  }
 }

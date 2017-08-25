@@ -25,13 +25,43 @@
         </a>
         <p onclick="Alerter.show('edit_key')"></p>
     </div>
-    <div id="content">
+    <div id="content" onclick="onOpenChatInfo(event)">
         <div id="chat-info">
-            <h2></h2>
-            <div id="chat-info-icons">
-                <i class="ion-person-stalker"></i>
-                <i class="ion-ios-help-outline"></i>
+            <div id="chat-info-toolbar" onclick="onOpenChatInfo(event, 'info')">
+                <h2></h2>
+                <div id="chat-info-icons">
+                    <i id="icon-users-list" class="ion-person-stalker" onclick="onOpenChatInfo(event, 'users')"></i>
+                    <i class="ion-help-circled" onclick="event.stopPropagation(); Alerter.show('help')"></i>
+                </div>
             </div>
+            <div id="chat-info-content">
+                <div id="chat-info-log">
+                    <p id="chat-info-username">Username <span></span></p>
+                    <p id="chat-info-users">Users <span></span></p>
+                    <p id="chat-info-spam">Spam <span></span></p>
+                </div>
+                <div id="chat-info-users-list">
+                    <!-- <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p>
+                    <p class="users-list-item">Username</p> -->
+                </div>
+            </div>
+
         </div>
         <div id="chat-messages"></div>
         <div id="chat-input">
