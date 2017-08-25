@@ -43,6 +43,6 @@ chatEmitter.on('chat_deleted', function (chatName) {
 });
 
 // server listen
-http.listen(process.env.PORT || 3000, function () {
+http.listen(process.env.PORT || 3000, '0.0.0.0',  function () {
     console.log('listening on *:' + (process.env.PORT || 3000 ));
 });
