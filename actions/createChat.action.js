@@ -57,7 +57,7 @@ module.exports = function createChatAction() {
         }
         // create chat files
         fs.writeFileSync(chatDir + '/chat.txt', "");
-        fs.writeFileSync(chatDir + '/users.txt', "");
+        fs.writeFileSync(chatDir + '/users.json', JSON.stringify({}));
         // add chat name to active chats
         fs.appendFileSync(activeChatsPath, chatName + '\n');
 

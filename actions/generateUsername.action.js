@@ -7,11 +7,11 @@ var fs = require('fs'),
 const MAX_RESEARCHES = 15000,
     MAX_ACTIVE_USERS = 300
 
-module.exports = function generateUsername(chatName) {
+module.exports = function generateUsername(chatName, socket) {
 
     // variables declaration
     var chatDir = './public/chats/' + chatName,
-        activeUsersPath = chatDir + '/users.txt';
+        activeUsersPath = chatDir + '/users.json';
 
     // check params
     if (!fs.existsSync(chatDir)) { return Promise.reject(new JsonRPCError(400, "Bad Request", { cause: "wrong chat name" })); }
@@ -50,14 +50,11 @@ module.exports = function generateUsername(chatName) {
 
     // append new message after the others
     return researchUserName().then((userName) => {
-        return new Promise((resolve, reject) => {
-            fs.appendFile(activeUsersPath, userName + '\n', function done(err) {
-                if (!err) {
-                    resolve(userName);
-                } else {
-                    reject(new JsonRPCError(500, 'Internal Server Error'));
-                }
-            });
+        return getFileContent(activeUsersPath).then(activeUsers => {
+            activeUsers = JSON.parse(activeUsers);
+            activeUsers[userName] = socket;
+            fs.writeFileSync(activeUsersPath, JSON.stringify(activeUsers));
+            return userName;
         })
     });
 };
