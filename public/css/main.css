@@ -10,6 +10,11 @@
   }
 */
 
+body,
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   display: flex;
   flex-direction: row;
@@ -33,9 +38,6 @@ body {
   background-color: rgba(92, 110, 211, 1);
   height: 60px;
 }
-
--webkit-overflow-scrolling: touch;
-/* lets it scroll lazy */
 
 input[type="text"] {
   text-align: center;
