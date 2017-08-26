@@ -7,3 +7,10 @@
   text-decoration: none;
   font-weight: lighter;
 }
+@media (max-width: 720px) {
+  #info {
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+  }
+}

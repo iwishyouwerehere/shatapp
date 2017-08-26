@@ -6,10 +6,7 @@ var path = require('path'),
 const activeChatsPath = './public/chats/chats.txt';
 
 module.exports = function (app) {
-    app.get('/chats/', function (req, res) {
-        res.redirect('/');
-    });
-    app.get('/chats/:chat/chat.html', function (req, res) {
+    function checkChat(req, res) {
         // check if chatName url correspond to any of the active chat, if not server "wrong chat html"
         let chatName = req.params.chat;
         let activeChats = fs.readFileSync(activeChatsPath, { encoding: 'UTF-8' });
@@ -18,6 +15,12 @@ module.exports = function (app) {
             res.sendFile(path.join(__dirname + '/../public/html/chat.html'));
         } else {
             res.sendFile(path.join(__dirname + '/../public/html/chat-not-found.html'));
-        }    
+        }
+    }
+
+    app.get('/chats/', function (req, res) {
+        res.redirect('/');
     });
+    app.get('/chats/:chat/', checkChat);
+    app.get('/chats/:chat/**', checkChat);
 }

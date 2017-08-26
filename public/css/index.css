@@ -1,34 +1,29 @@
-#info > h4 {
-  margin-top: 0;
-  font-weight: lighter;
-}
-
-#info > p {
-  font-size: small;
-  background-color: rgba(255, 255, 255, .1);
-  border-radius: 8px;
-  height: 50px;
-  min-width: 75px;
-  padding: 8px 16px;
-  line-height: 34px;
-  margin: 8px 0 0;
-  opacity: 0;
-  transition: opacity .4s linear;
-}
-
-form {
+#content {
   display: flex;
   flex-direction: column;
+  padding: 16px 32px;
   justify-content: center;
   align-items: center;
+  background-color: #495ece;
 }
 
-form > * {
+#content * {
   margin: 8px 0;
   text-align: center;
 }
 
-form > button {
+#content input {
+  display: block;
+}
+
+#content button {
   min-height: 25px;
   min-width: 75px;
+}
+
+#content p {
+  display: inline-block;
+  font-size: small;
+  color: white;
+  margin: 0 8px;
 }

@@ -2,7 +2,6 @@
 
 var socket;
 var key = undefined;
-var keyChangeEvent = new Event('keyChangeEvent');
 var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
     this.jsonrpc = '2.0';
     this.method = method;
@@ -17,6 +16,14 @@ var JsonRPCRequest = function JsonRPCRequest(method, params = null, id = null) {
  */
 function init() {
     socket = io();
+
+    // get saved key if there's one
+    key = getKey();
+    var $keyView = document.querySelector("#info p");
+    if (key) {
+        $keyView.innerHTML = key;
+        setTimeout(function () { $keyView.style.opacity = 1; }, 0); // for style purpose only
+    } else { $keyView.style.display = 'none'; }
 }
 
 
@@ -26,17 +33,39 @@ function init() {
  */
 function createChat() {
     var request = new JsonRPCRequest('POST', null, 0);
-    
+
     socket.emit("create_chat", request, function (response) {
         if (!response['error']) {
             window.location.href = "/chats/" + response.result + "/chat.html";
         } else {
+            Alerter.show('unknown');
         }
-    })
+    });
 }
 
 /**
- * Access achat service and save locally the key.
+ * 
+ * 
+ * @param {any} chatName 
+ */
+function joinChat(chatName) {
+    var request = new JsonRPCRequest('GET', { chatName: chatName }, 0);
+
+    socket.emit("exist_chat", request, function (response) {
+        if (!response['error']) {
+            if (response.result) {
+                window.location.href = "/chats/" + chatName + "/chat.html";
+            } else {
+                Alerter.show('wrong_chatName');
+            }
+        } else {
+            Alerter.show('unknown');
+        }
+    });
+}
+
+/**
+ * Access chat service by joining a chat or creating a new one
  * Accepted parameters: join, create
  * 
  * @param {string} type 
@@ -44,50 +73,27 @@ function createChat() {
 
 function access(type) {
     // get key value and set it
-    var $inputKey = document.querySelector("form > input");
-    var key = $inputKey.value;
+    var $inputKey = document.querySelector("form input");
+    var chatName = $inputKey.value;
     setTimeout(function () { $inputKey.value = "" }, 0); // for style purpose only
-    if (type == "create") { document.removeEventListener('keyChangeEvent', keyChangeEvent); }
-    if (key && !setKey(key)) {
-        alert("your browser don't allows storage");
-        return;
-    }
 
     // switch based on access type
     switch (type) {
-        case 'join':
-            if (key) {
-                setKey(key);
-            } else {
-                removeKey();
+        case 'join': {
+            // check if chat exist
+            if (chatName) {
+                joinChat(chatName);
             }
             break;
-        case 'create':
-            if (this.key) {
-                createChat();
-            }
+        }
+        case 'create': {
+            $inputKey.blur();
+            createChat();
             break;
-    }
-}
-
-/**
- * Save locally the private key
- * 
- * @param {string} key
- * @returns {boolean} if browser supports storage
- */
-function setKey(key) {
-    if (key) {
-        this.key = key;
-        document.dispatchEvent(keyChangeEvent);
-        if (typeof (Storage) !== "undefined") {
-            sessionStorage.setItem("key", key);
-            return true;
         }
     }
-
-    return false;
 }
+
 
 /**
  * Get locally saved private key if present
@@ -102,13 +108,23 @@ function getKey() {
 }
 
 /**
+ * Set locally the given key
+ * 
+ * @param {any} key
+ */
+function setKey(key) {
+    this.key = key;
+    if (typeof (Storage) !== "undefined") {
+        sessionStorage.setItem("key", key);
+    }
+}
+/**
  * Remove locally saved private key
  * 
  * @returns {boolean} if browser supports storage
  */
 function removeKey() {
     this.key = undefined;
-    document.dispatchEvent(keyChangeEvent);
     if (typeof (Storage) !== "undefined") {
         sessionStorage.removeItem("key");
         return true;
@@ -117,31 +133,46 @@ function removeKey() {
     return false;
 }
 
-/**
- * Event handler for key change event.
- * Edit style of index.html according to user key presence
- * 
- */
-function keyChanged() {
-    var $keyView = document.querySelector("#info > p");
-    var $form = document.querySelector("form");
-    if (key) {
-        $keyView.innerHTML = key;
-        $keyView.style.opacity = 1;
-        $form.querySelector("input").required = false;
-        $form.querySelector("#button-join").innerHTML = "Leave";
-    } else {
-        $keyView.style.opacity = 0;
-        setTimeout(function () { $keyView.innerHTML = ""; }, 200);
-        setTimeout(function () { $form.querySelector("input").required = true; }, 0); // for style purpose only
-        $form.querySelector("#button-join").innerHTML = "Join chat";
-    }
-}
-
-
-
 // DOCUMENT READY
 var documentReady = function () {
+
+    // bind Alerter object to dom elements
+    Alerter.init(document.getElementById("alert"),
+        {
+            'edit_key': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Manage key";
+                    Alerter.$text.innerHTML = "Here you can change your key with a new one";
+                    Alerter.$input.style.display = "block";
+                    Alerter.$input.value = key;
+                    Alerter.$button.innerHTML = "Save edit";
+                },
+                onClose: function (data) {
+                    setKey(data);
+                    var $keyView = document.querySelector("#info p");
+                    $keyView.innerHTML = key;
+                }
+            },
+            'wrong_chatName': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Chat don't exist... yet";
+                    Alerter.$text.innerHTML = "The chat name you entered doesn't correspond to anything on our servers. Please retry";
+                    Alerter.$button.innerHTML = "Continue";
+                },
+                onClose: function (data) {
+                }
+            },
+            'unknown': {
+                onShow: function () {
+                    Alerter.$title.innerHTML = "Unknown Error";
+                    Alerter.$text.innerHTML = "We don't know what happened D:<br>Try reloading the page!";
+                    Alerter.$button.innerHTML = "Reload";
+                },
+                onClose: function (data) {
+                    window.location.reload();
+                }
+            }
+        });
 
     // init
     init();
@@ -150,24 +181,6 @@ var documentReady = function () {
     document.querySelector("form").addEventListener("submit", function (e) {
         e.preventDefault();
     });
-
-    // get saved key if there's one and bind page to keyChangeEvent
-    document.addEventListener('keyChangeEvent', keyChanged.bind(this));
-    setKey(getKey());
-    document.dispatchEvent(keyChangeEvent);
-
-
-    // bind to key input change event
-    document.querySelector("form > input").onkeyup = function (e) {
-        if (e && e.target.value != "") {
-            if (key) {
-                document.querySelector("form > #button-join").innerHTML = "Change key";
-            }
-        } else if (key) {
-            document.querySelector("form > #button-join").innerHTML = "Leave";
-        }
-    }.bind(this);
-
 
 }.bind(this);
 
