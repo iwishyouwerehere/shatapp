@@ -57,10 +57,10 @@ chatEmitter.on('chat_deleted', function (chatName) {
     io.to(chatName).emit('chat_deleted', new JsonRPCRequest('SEND', { chatName: chatName }));
 });
 chatEmitter.on('user_joined', function (info) {
-    io.to(info.chatName).emit('user_joined', new JsonRPCRequest('SEND', { userName: userName }));
+    io.to(info.chatName).emit('user_joined', new JsonRPCRequest('SEND', { userName: info.userName }));
 });
 chatEmitter.on('user_leaved', function (info) {
-    io.to(info.chatName).emit('user_leaved', new JsonRPCRequest('SEND', { userName: userName }));
+    io.to(info.chatName).emit('user_leaved', new JsonRPCRequest('SEND', { userName: info.userName }));
 });
 
 // server listen
