@@ -1,17 +1,4 @@
-body {
-  flex-direction: column;
-  background-color: #495ece;
-}
-
-#info {
-  height: 50%;
-  width: 100%;
-  justify-content: flex-end;
-}
-
 #content {
-  width: 100%;
-  height: 50%;
   display: flex;
   flex-direction: column;
   padding: 16px 32px;
@@ -39,19 +26,4 @@ body {
   font-size: small;
   color: white;
   margin: 0 8px;
-}
-@media (max-width: 720px) {
-  #info {
-    flex-direction: column;
-  }
-
-  #info img {
-    display: block;
-    max-height: 100px;
-    max-width: 150px;
-  }
-
-  #info p {
-    margin: 24px 0 0;
-  }
 }

@@ -43,11 +43,15 @@ function createChat() {
     });
 }
 
+/**
+ * 
+ * 
+ * @param {any} chatName 
+ */
 function joinChat(chatName) {
     var request = new JsonRPCRequest('GET', { chatName: chatName }, 0);
 
     socket.emit("exist_chat", request, function (response) {
-        console.log(response);
         if (!response['error']) {
             if (response.result) {
                 window.location.href = "/chats/" + chatName + "/chat.html";
@@ -61,7 +65,7 @@ function joinChat(chatName) {
 }
 
 /**
- * Access achat service and save locally the key.
+ * Access chat service by joining a chat or creating a new one
  * Accepted parameters: join, create
  * 
  * @param {string} type 
@@ -133,7 +137,6 @@ function removeKey() {
 var documentReady = function () {
 
     // bind Alerter object to dom elements
-    console.log("alert", Alerter);
     Alerter.init(document.getElementById("alert"),
         {
             'edit_key': {

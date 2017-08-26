@@ -1,28 +1,3 @@
-#info > a {
-  color: white;
-  text-decoration: none;
-  font-weight: lighter;
-}
-
-#info > #chat-log {
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: calc(100% - 32px);
-  bottom: 8px;
-  font-size: 11px;
-}
-
-#info > #chat-log > small {
-  font-weight: 100;
-  margin: 0 4px;
-}
-
-#info > #chat-log > small > span {
-  font-weight: 500;
-}
-
 #content {
   display: flex;
   flex-direction: column;
@@ -31,6 +6,8 @@
   margin: 16px;
   flex-grow: 1;
 }
+
+/* chat info box */
 
 #chat-info {
   position: relative;
@@ -62,6 +39,9 @@
 
 #chat-info-toolbar h2 {
   max-width: calc(100% - 136px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #chat-info-icons > i {
@@ -76,63 +56,9 @@
   opacity: .6;
 }
 
-#chat-info-content {
-  display: flex;
-  flex-direction: column;
-  height: 300px;
-  padding-bottom: 16px;
-}
+#chat-info-content {}
 
-#chat-info-log {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-size: small;
-  padding: 0 16px;
-  height: 44px;
-  flex-shrink: 0;
-}
-
-#chat-info-log p {
-  font-weight: 600;
-  margin-right: 24px;
-  text-align: left;
-}
-
-#chat-info-log p:last-of-type {
-  margin-right: 0;
-}
-
-#chat-info-log span {
-  font-weight: 100;
-}
-
-#chat-info-users-list {
-  margin-left: -20px;
-  margin-right: -20px;
-  overflow-y: scroll;
-  padding-left: 24px;
-  text-align: left;
-}
-
-.users-list-item {
-  position: relative;
-  margin: 6px 0;
-  padding-left: 16px;
-}
-
-.users-list-item span {
-  width: 6px;
-  height: 6px;
-  display: inline-block;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-.users-list-header {
-  font-size: small;
-  color: #37427f;
-}
+/* chat messages box */
 
 #chat-messages {
   height: calc(100% - 64px);
@@ -198,6 +124,8 @@
 .chat-message:last-of-type > p:last-of-type {
   animation: showUpALot .4s linear 1;
 }
+
+/* animations */
 @keyframes showUpALot {
   from {
     opacity: .4;
@@ -216,6 +144,8 @@
     opacity: 1;
   }
 }
+
+/* MOBILE */
 @media (max-width: 720px) {
   #chat-info {
     border-radius: 0;

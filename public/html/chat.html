@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <script src="/js/chat.js" type="text/javascript"></script>
     <script src="/js/alerter.js" type="text/javascript"></script>
+    <script src="/js/storageWrap.js" type="text/javascript"></script>
+    <script src="/js/encryptor.js" type="text/javascript"></script>
+    <script src="/js/styleTools.js" type="text/javascript"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="//cdn.jsdelivr.net/bluebird/3.5.0/bluebird.min.js"></script>
 </head>
@@ -25,47 +28,20 @@
         </a>
         <p onclick="Alerter.show('edit_key')"></p>
     </div>
-    <div id="content" onclick="onOpenChatInfo(event)">
+    <div id="content">
         <div id="chat-info">
-            <div id="chat-info-toolbar" onclick="onOpenChatInfo(event, 'info')">
+            <div id="chat-info-toolbar">
                 <h2></h2>
                 <div id="chat-info-icons">
-                    <i id="icon-users-list" class="ion-person-stalker" onclick="onOpenChatInfo(event, 'users')"></i>
+                    <i id="icon-users-list" class="ion-person-stalker"></i>
                     <i class="ion-help-circled" onclick="event.stopPropagation(); Alerter.show('help')"></i>
                 </div>
             </div>
-            <div id="chat-info-content">
-                <div id="chat-info-log">
-                    <p id="chat-info-username">Username <span></span></p>
-                    <p id="chat-info-users">Users <span></span></p>
-                    <p id="chat-info-spam">Spam <span></span></p>
-                </div>
-                <div id="chat-info-users-list">
-                    <!-- <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p>
-                    <p class="users-list-item">Username</p> -->
-                </div>
-            </div>
-
+            <div id="chat-info-content"></div>
         </div>
         <div id="chat-messages"></div>
         <div id="chat-input">
-            <textarea type="text" id="input" tabindex="0" placeholder="Write something..."></textarea>
+            <textarea type="text" id="input" tabindex="0" placeholder="Write something..." onfocus="this.placeholder = ''" onblur="this.placeholder = 'Write something...'"></textarea>
             <button type="submit" onclick="sendMsg()" tabindex="1">Invia</button>
         </div>
     </div>
